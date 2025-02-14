@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+
+<style>
+    .debit {
+        color:rgb(216, 41, 41) !important; /* Dark Red */
+        font-weight: bold;
+    }
+    .credit {
+        color:rgb(4, 136, 4) !important; /* Dark Green */
+        font-weight: bold;
+    }
+</style>
+<script>
+   
+</script>    
+<div class="content-wrapper">
+    <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                
+                <div class="d-flex justify-content-end align-items-center">
+                    <div class="col-12 grid-margin stretch-card">
+                        <div class="container mt-5 col-md-6">
+                            <div class="card card-body">
+                                
+                                <h2>Account Entry Statement</h2>
+                                <form method="post" enctype="multipart/form-data" id="myForm">
+                                    {% csrf_token %}
+                                    {% for form_field in form %}
+                                    <div class="form-group">
+                                        {{ form_field.label_tag }}
+                                        {{ form_field }}
+                                        <span class="text-danger">{{ form_field.errors }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </form>
+                                <button type="submit" form="myForm" class="btn btn-success">Show</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container mt-4 d-flex">
+                    <button onclick="printTable()" class="btn btn-primary">Print</button>
+                    <button onclick="downloadCSV()" class="btn btn-secondary">Download</button>
+                </div>
+                
+                <script>
+                    function printTable() {
+                        var printContents = document.querySelector("#print").innerHTML;  // Change this to the wrapper containing the table
+                        var originalContents = document.body.innerHTML;
+                        document.body.innerHTML = printContents;
+                        window.print();
+                        document.body.innerHTML = originalContents;
+                        location.reload();
+                    }
+                
+                    function downloadCSV() {
+                        let table = document.querySelector("table");
+                        let rows = table.querySelectorAll("tr");
+                        let csvContent = "";
+                
+                        rows.forEach(row => {
+                            let cols = row.querySelectorAll("th, td");
+                            let rowData = [];
+                            cols.forEach(col => rowData.push(col.innerText));
+                            csvContent += rowData.join(",") + "\n";
+                        });
+                
+                        let blob = new Blob([csvContent], { type: "text/csv" });
+                        let link = document.createElement("a");
+                        link.href = URL.createObjectURL(blob);
+                        link.download = "account_statement.csv";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                    
+                </script>
+                
+                {% if record_details %}
+                <div class="container mt-4" id='print'>
+                    <table class="table table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Entry Date</th>
+                                <th>Entry ID</th>
+                                <th>Transaction ID</th>
+                                <th>Amount</th>
+                                <th>Debit/Credit</th>
+                                <th>Account Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in record_details %}
+                            <tr>
+                                <td>{{ record.entry_date }}</td>
+                                <td>{{ record.entry_id }}</td>
+                                <td>{{ record.transaction_id }}</td>
+                                <td class="{% if record.debit_credit_marker == 'Debit' %}debit{% elif record.debit_credit_marker == 'Credit' %}credit{% endif %}">
+                                    {{ record.amount }}
+                                </td>
+                                <td class="{% if record.debit_credit_marker == 'Debit' %}debit{% elif record.debit_credit_marker == 'Credit' %}credit{% endif %}">
+                                    {{ record.debit_credit_marker }}
+                                </td>
+                                <td>{{ record.account_number }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="container mt-4 text-center">
+                    <h5>No Entry Found</h5>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

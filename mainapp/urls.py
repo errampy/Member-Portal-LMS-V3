@@ -20,6 +20,9 @@ urlpatterns = [
     path("verify/",verify, name="verify"),
     path("basic/",basic, name="basic"),
     path("download/",download, name="download"),
+    path("account_entry/",account_entry, name="account-entry"),
+    path("loan_statement/",loan_statement, name="loan-statement"),
+    path("loan_refinance/<str:member>/<str:loanapp>/<str:loan>/",loan_refinance, name="loan-refinance"),
     path("loanapplication/",loanapplication, name="loanapplication"),
     path("loan-calculator/",loancalculator, name="loancalculator"),
     path("applyloan/",applyloan, name="applyloan"),
@@ -33,6 +36,4 @@ urlpatterns = [
     path("bank/",bank, name="bank"),
     path("edit_req/",edit_req, name="edit_req"),
     path('payment_process/<str:schedule_id>/<str:loan_application_id>/',payment_process,name='payment_process'),
-
-
 ]

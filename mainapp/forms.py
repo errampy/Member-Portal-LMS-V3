@@ -445,3 +445,30 @@ class CustomerAccount(forms.Form):
     ifsc_code = forms.CharField(max_length=11, required=False, widget=forms.TextInput(attrs={"class": "form-control"}))
     account_balance = forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
     account_status = forms.ChoiceField(choices=[('active', 'Active'), ('inactive', 'Inactive')], required=True, widget=forms.Select(attrs={"class": "form-control"}))
+
+
+class StatementForm(forms.Form):
+	applicant_id=forms.CharField(max_length=50,widget=forms.TextInput(attrs={'class':'form-control'}))
+
+class LoanStatementForm(forms.Form):
+	applicant_id=forms.CharField(max_length=50,widget=forms.TextInput(attrs={'class':'form-control'}))
+	loan_id=forms.CharField(max_length=50,widget=forms.TextInput(attrs={'class':'form-control'}))
+
+class WalletTopUp(forms.Form):
+    cashbook_account=forms.CharField(max_length=50,widget=forms.TextInput(attrs={'class':'form-control'}))
+    transaction_mode=forms.CharField(max_length=50,widget=forms.TextInput(attrs={'class':'form-control'}))
+    amount=forms.FloatField(required=True, widget=forms.NumberInput(attrs={"class": "form-control"}))
+
+class RefinanceForm(forms.Form):
+	loan_amount=forms.FloatField(
+        required=True,
+        label='Loan Amount',
+        widget=forms.NumberInput(attrs={"class": "form-control","readony":"readonly"})
+    )
+	tenure=forms.IntegerField(
+        required=True,
+        label='Tenure',
+        widget=forms.NumberInput(attrs={"class": "form-control","readony":"readonly"})
+    )
+	repayment_id= forms.DateField( required=False,label='repayment date', widget=forms.DateInput(attrs={"class": "form-control", "type": "date"}))
+

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Entry Statement</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .debit { color: red; font-weight: bold; }
+        .credit { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Account Entry Statement</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Entry Date</th>
+                <th>Transaction ID</th>
+                <th>Amount</th>
+                <th>Debit/Credit</th>
+                <th>Account Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in record_details %}
+            <tr>
+                <td>{{ record.entry_date }}</td>
+                <td>{{ record.transaction_id }}</td>
+                <td class="{% if record.debit_credit_marker == 'Debit' %}debit{% elif record.debit_credit_marker == 'Credit' %}credit{% endif %}">
+                    {{ record.amount }}
+                </td>
+                <td class="{% if record.debit_credit_marker == 'Debit' %}debit{% elif record.debit_credit_marker == 'Credit' %}credit{% endif %}">
+                    {{ record.debit_credit_marker }}
+                </td>
+                <td>{{ record.account_number }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

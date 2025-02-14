@@ -7,9 +7,9 @@
 <div class="card px-3 py-3 mt-4">
   <!-- Action Button -->
   <div class="col-md-2 mb-3">
-    <a href="{% url 'account' %}" class="btn btn-primary text-decoration-none text-white me-2">
+    {% comment %} <a href="{% url 'account' %}" class="btn btn-primary text-decoration-none text-white me-2">
         New Account
-    </a>
+    </a> {% endcomment %}
   </div>
 
   <!-- Account List Table -->
@@ -19,30 +19,28 @@
       <thead>
         <tr class="table-primary">
           <th>S.No</th>
-          <th>Bank Name</th>
-          <th>Branch Name</th>
-          <th>IFSC Code</th>
           <th>Account Number</th>
-          <th>Account Balance</th>
-          <th>Account Status</th>
-          <th>Is Deactivated</th>
-          <th>Branch ID</th>
-          <th>Customer ID</th>
+          <th>Account Holder</th>
+          <th>GL Line</th>
+          <th>Account Type</th>
+          <th>Account Category</th>
+          <th>Opening Balance</th>
+          <th>Total Balance</th>
+       
         </tr>
       </thead>
       <tbody>
         {% for account in accounts %}
         <tr>
           <td>{{ forloop.counter }}</td>
-          <td>{{ account.bank_name|default:"-" }}</td>
-          <td>{{ account.branch_name|default:"-" }}</td>
-          <td>{{ account.ifsc_code|default:"-" }}</td>
           <td>{{ account.account_number|default:"-" }}</td>
-          <td>{{ account.account_balance|default:"-" }}</td>
-          <td>{{ account.account_status|default:"-" }}</td>
-          <td>{{ account.is_deactivate|yesno:"Yes,No"|default:"-" }}</td>
-          <td>{{ account.branch|default:"-" }}</td>
-          <td>{{ account.customer|default:"-" }}</td>
+          <td>{{ account.account_holder|default:"-" }}</td>
+          <td>{{ account.gl_line|default:"-" }}</td>
+          <td>{{ account.account_type|default:"-" }}</td>
+          <td>{{ account.account_category|default:"-" }}</td>
+          <td>{{ account.opening_balance|floatformat:2}}</td>
+          <td>{{ account.total_balance|floatformat:2}}</td>
+          
         </tr>
         {% endfor %}
       </tbody>

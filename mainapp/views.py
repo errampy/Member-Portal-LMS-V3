@@ -29,7 +29,7 @@ def dashboard(request):
         if member and 'code' in member:
             code1 = member['code']
             dict1 = {
-                "ms_id": "MS22012776",
+                "ms_id": "MS5022168",
                 "ms_payload": {"code": code1}
             }
             json_data = json.dumps(dict1)
@@ -54,17 +54,22 @@ def dashboard(request):
         "total_repayment": 0,
     }
     loan_amount = 0
+    wallet_balance=0
+    cashbook_balance=0
 
     if loanapp and 'application_id' in loanapp:
         code1 = loanapp['application_id']
         dict1 = {
-            "ms_id": "MS22019182",
+            "ms_id": "MS5022168",
             "ms_payload": {"code": code1}
         }
         json_data = json.dumps(dict1)
         try:
             response1 = call_post_method_without_token(url, json_data)
             data = json.loads(response1.content)
+            print('response1',response1.content)
+            wallet_balance = data.get("wallet_balance", 0)
+            cashbook_balance =data.get("cashbook_balance", 0)
             if "loan_amount" in data:
                 loan_amount = data["loan_amount"]
             if "applications_with_repayment_counts" in data and data["applications_with_repayment_counts"]:
@@ -75,7 +80,7 @@ def dashboard(request):
                     "pending_count": repayment_data.get("pending_count", 0),
                     "amount_paid": repayment_data.get("amount_paid", 0),
                     "amount_pending": repayment_data.get("amount_pending", 0),
-                    "total_repayment": repayment_data.get("paid_count", 0) + repayment_data.get("pending_count", 0)
+                    "total_repayment": repayment_data.get("paid_count", 0) + repayment_data.get("pending_count", 0),
                 }
         except Exception as e:
             print(f"Error fetching loan data: {e}")
@@ -85,6 +90,8 @@ def dashboard(request):
         'member': member,
         'desired_data': desired_data,
         'loan_amount': loan_amount,
+        'wallet_balance':wallet_balance,
+        'cashbook_balance':cashbook_balance
     })
 
 def member_profile(request):
@@ -123,7 +130,7 @@ def login(request):
             request.session['id_number'] = id_number  
 
             dict1 = {
-                "ms_id": "MS6014365",
+                "ms_id": "MS5022575",
                 "ms_payload": {
                     "code": str(cleaned_data['id_number']),
                 }
@@ -143,18 +150,6 @@ def login(request):
             else:
                 error_message = "Either you are not a registered member or your under approval process"
 
-            # response=response1.content
-            # print('response',response)
-            # response_data = json.loads(response)
-            # member = response_data[0].get('member')
-            # print('member',member)
-            # request.session['member'] = member
-
-            # if response1.status_code == 200:
-            #     return redirect('verify')  
-            # else:
-            #     error_message = "No member found. Please check your member code and try again."
-
     return render(request, 'login1.html', {'form': form, 'error_message': error_message})
 
 def register(request):
@@ -166,12 +161,93 @@ def verify(request):
 
 def basic(request):
     form=UserRegistrationForm()
-    
     return render(request,'basic.html',{'form':form}) 
 
 
 def download(request):
     return render(request,'download.html') 
+
+
+import json
+
+def account_entry(request):
+    member = request.session.get('member')
+    record_details = []  
+
+    form = StatementForm()
+    error_message = None  # Default error message
+
+    if request.method == 'POST':
+        form = StatementForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            id_number = str(cleaned_data['applicant_id'])  
+            request.session['id_number'] = id_number  
+
+            dict1 = {
+                "ms_id": "MS12022901",
+                "ms_payload": {
+                    "applicant_id": id_number,
+                }
+            }
+            json_data = json.dumps(dict1)
+            response1 = call_post_method_without_token(url, json_data)
+            
+            if response1.status_code == 200:
+                # Properly decode the response
+                record_details = json.loads(response1.content.decode('utf-8'))
+                print('Parsed Response:', record_details)
+            else:
+                error_message = "Either you are not a registered member or you're under the approval process."
+
+    context = {
+        "form": form,
+        "record_details": record_details,  # Now properly formatted
+        "error_message": error_message,
+    }  
+    return render(request, 'account_entry.html', context)
+
+
+def loan_statement(request):
+    member = request.session.get('member')
+    record_details = []  
+
+    form = LoanStatementForm()
+    error_message = None  # Default error message
+
+    if request.method == 'POST':
+        form = LoanStatementForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            applicant_id = str(cleaned_data['applicant_id'])  
+            loan_id = str(cleaned_data['loan_id'])  
+
+            dict1 = {
+                "ms_id": "MS12024740",
+                "ms_payload": {
+                    "applicant_id": applicant_id,
+                    'loan_id':loan_id
+                }
+            }
+            json_data = json.dumps(dict1)
+            response1 = call_post_method_without_token(url, json_data)
+            
+            if response1.status_code == 200:
+                # Properly decode the response
+                record_details = json.loads(response1.content.decode('utf-8'))
+                print('Parsed Response:', record_details)
+            else:
+                error_message = "Either you are not a registered member or you're under the approval process."
+
+    context = {
+    "form": form,
+    "record_details": record_details,  # Now properly formatted
+    "error_message": error_message,
+}  
+
+    return render(request,'loan_statement.html',context) 
+
+
 def loanapplication(request):
     member = request.session.get('member')
     if not member:
@@ -181,7 +257,7 @@ def loanapplication(request):
     print('code', code1)
     
     dict1 = {
-        "ms_id": "MS22012776",
+        "ms_id": "MS5021722",
         "ms_payload": {
             "code": code1,
         }
@@ -237,7 +313,7 @@ def applyloan(request):
 
             # Simulating the API request for loan types
             loan_dict = {
-                "ms_id": "MS23011466",
+                "ms_id": "MS5028967",
                 'ms_payload': cleaned_data         
             }
             print('loan_dict', loan_dict)
@@ -255,7 +331,7 @@ def applyloan(request):
     else:
         form = LoanDisbursementForm()
         dict1 = {
-            "ms_id": "MS23014869",
+            "ms_id": "MS5026390",
             "ms_payload": {}
         }
         json_data = json.dumps(dict1)
@@ -325,7 +401,7 @@ def basic1(request):
             files, cleaned_data = image_filescreate(cleaned_data)
 
             dict2 = {
-                "ms_id": "MS22012570",
+                "ms_id": "MS5022689",
                 "ms_payload": cleaned_data if files else cleaned_data
                 }
 
@@ -341,7 +417,7 @@ def basic1(request):
     else:
         form = UserRegistrationForm()  # Create an empty form if GET request
         category_dict = {
-                "ms_id": "MS24017038",
+                "ms_id": "MS5024477",
                 "ms_payload": {'branch_id':'2'}
             }
         json_data = json.dumps(category_dict)
@@ -360,7 +436,7 @@ def basic1(request):
         print('category_data',category_datas)
 
         category_type_dict = {
-                "ms_id": "MS24018714",
+                "ms_id": "MS5025936",
                 "ms_payload": {'branch_id':'2'}
             }
         json_data = json.dumps(category_type_dict)
@@ -379,12 +455,12 @@ def basic1(request):
                 print('category_type_data',category_type_datas)
 
         category_dict = {
-                "ms_id": "MS24013767",
+                "ms_id": "MS5027597",
                 "ms_payload": {'branch_id':'2'}
             }
         json_data = json.dumps(category_dict)
         member_category = call_post_method_without_token(url, json_data)
-        # print('member_category',member_category.content)
+        print('member_category',member_category.content)
         if member_category.status_code == 200:
             member_category_data = json.loads(member_category.content)
             if member_category_data and member_category_data[0].get("obj"):
@@ -397,8 +473,9 @@ def basic1(request):
                 ]   
                 print('member_category_data',member_category_data)
 
+        officer_datas=[]
         officer_dict = {
-                "ms_id": "MS24012868",
+                "ms_id": "MS5028323",
                 "ms_payload": {'branch_id':'2'}
             }
         json_data = json.dumps(officer_dict)
@@ -414,8 +491,9 @@ def basic1(request):
                     for loan in officer_data[0]["obj"]
                 ]   
                 print('officer_data',officer_datas)
+        department_datas=[]
         department_dict = {
-                "ms_id": "MS24015034",
+                "ms_id": "MS5028243",
                 "ms_payload": {'branch_id':'2'}
             }
         json_data = json.dumps(department_dict)
@@ -432,8 +510,10 @@ def basic1(request):
                     for loan in department_data[0]["obj"]
                 ]   
                 print('department_data',department_datas)
+
+        title_datas = []  # Initialize an empty list before the if condition
         title_dict = {
-                "ms_id": "MS24013886",
+                "ms_id": "MS5025774",
                 "ms_payload": {'branch_id':'2'}
             }
         json_data = json.dumps(title_dict)
@@ -451,7 +531,8 @@ def basic1(request):
                 ]   
                 print('title_data',title_datas)
 
-    return render(request, 'basic1.html',{'form': form,'category_data':category_datas,'category_type_datas':category_type_datas,'title_data':title_datas,
+    return render(request, 'basic1.html',{'form': form,'category_data':category_datas,'category_type_datas':category_type_datas,
+                                          'title_data':title_datas,
                   'member_category_data':member_category_data,'officer_data':officer_datas,'department_data':department_datas})
 
 import requests
@@ -515,11 +596,11 @@ def repayment_Schedule(request):
 
     # Determine ms_id based on loan status
     if loan_status == "restructured":
-        ms_id = "MS27011625"
+        ms_id = "MS5026025"
     elif loan_status == "Cleared balance and moved for refinance":
-        ms_id = "MS27012404"
-    elif loan_status == "approved":
-        ms_id = "MS27015670"
+        ms_id = "MS5025769"
+    elif loan_status == "Approved":
+        ms_id = "MS5025475"
     else:
         # Handle loans under disbursement or unknown statuses
         return render(request, 'repayment.html', {'error_message': 'Application is under disbursement process. Please check back later.'})
@@ -546,7 +627,7 @@ def loancalculator(request):
 
             print('cleaned_data', cleaned_data)
             dict1 = {
-                    "ms_id": "MS8017447",
+                    "ms_id": "MS5024169",
                     "ms_payload":  cleaned_data,
                     
                 }
@@ -577,7 +658,7 @@ def loancalculator(request):
     else:
         form = Loancalculator()
         dict1 = {
-            "ms_id": "MS23014869",
+            "ms_id": "MS5026390",
             "ms_payload": {}
         }
         json_data = json.dumps(dict1)
@@ -604,8 +685,105 @@ def loancalculator(request):
 def req(request):
     return render(request,'requests.html') 
 
+
+
+
 def deposit(request):
-    return render(request,'deposit.html') 
+    member = request.session.get('member')
+    print('Member:', member)
+
+    category_types = []
+    amounts = []  # Store balances separately
+    success_message = None
+
+    # API Request to fetch category types and balances
+    dict1 = {
+        "ms_id": "MS13024662",
+        "ms_payload": {'member': member['code']}
+    }
+    json_data = json.dumps(dict1)
+    
+    response1 = call_post_method_without_token(url, json_data)
+    print('Response:', response1.content)
+
+    if response1.status_code == 200 and response1.content:
+        response_data = json.loads(response1.content)
+        category_types = [{"code": category["code"]} for category in response_data]
+        amounts = [{"balance": category["total_balance"]} for category in response_data]
+        print('Category Types:', category_types)
+        print('Amounts:', amounts)
+
+
+        transaction_types = []
+
+        # API Request to fetch category types and balances
+        dict1 = {
+            "ms_id": "MS14023754",
+            "ms_payload": {}
+        }
+        json_data = json.dumps(dict1)
+
+        response1 = call_post_method_without_token(url, json_data)
+        print('Response:', response1.content)
+
+        if response1.status_code == 200 and response1.content:
+            response_data = json.loads(response1.content)
+            
+            # Extract the transaction list from the first dictionary in the response
+            if isinstance(response_data, list) and "obj" in response_data[0]:
+                transaction_list = response_data[0]["obj"]
+
+                # Extract the transaction codes
+                transaction_types = [
+                    {"code": transaction["code"], "name": transaction["name"]}
+                    for transaction in transaction_list
+]
+            
+    print('Transaction Types:', transaction_types)
+
+
+    if request.method == 'POST':
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            try:
+                data = json.loads(request.body)
+                cashbook_account = data.get('cashbook_account')
+                amount = float(data.get('amount', 0))
+                transaction_mode = data.get('transaction_mode')
+
+                # Fetch available balance
+                available_balance = 0
+                for item in amounts:
+                    if item["balance"] is not None:
+                        available_balance = item["balance"]
+                        break
+
+                if amount > available_balance:
+                    return JsonResponse({"success": False, "message": "Insufficient balance. Please enter a valid amount."}, status=400)
+
+                dict1 = {
+                    "ms_id": "MS13028509",
+                    "ms_payload": {
+                        'member': member['code'],
+                        'account': cashbook_account,
+                        'amount': amount,
+                        'transaction_mode': transaction_mode
+                    }
+                }
+                json_data = json.dumps(dict1)
+
+                response1 = call_post_method_without_token(url, json_data)
+
+                return JsonResponse({
+                    "success": True,
+                    "message": f"Deposit of {amount} to your {cashbook_account} account has been successfully processed."
+                })
+
+            except json.JSONDecodeError:
+                return JsonResponse({"success": False, "message": "Invalid JSON format."}, status=400)
+        else:
+            return JsonResponse({"success": False, "message": "Invalid request."}, status=400)
+
+    return render(request, 'wallet.html', {'category_types': category_types, 'amounts': amounts, 'transaction_types': transaction_types})
 
 def account(request):
     member = request.session.get('member')
@@ -664,7 +842,7 @@ def next_of_kinn(request):
             files=request.FILES
             print('uploaded',request.FILES)
             dict2 = {
-                "ms_id": "MS28013906",
+                "ms_id": "MS5024932",
                 "ms_payload": cleaned_data if files else cleaned_data
             }
 
@@ -681,7 +859,7 @@ def next_of_kinn(request):
     else:
         form = NextOfKinn()
         title_dict = {
-            "ms_id": "MS28017677",
+            "ms_id": "MS5021914",
             "ms_payload": {'branch_id': '2'}
         }
         json_data = json.dumps(title_dict)
@@ -713,7 +891,7 @@ def next_of_kinn_list(request):
     print('code', code1)
 
     dict1 = {
-        "ms_id": "MS6019717",
+        "ms_id": "MS5029549",
         "ms_payload": {
             "code": code1,
         }
@@ -749,7 +927,7 @@ def subscriptions(request):
             print(cleaned_data)
 
             dict2 = {
-                "ms_id": "MS28018008",
+                "ms_id": "MS5025558",
                 "ms_payload": cleaned_data
             }
 
@@ -764,7 +942,7 @@ def subscriptions(request):
     else:
         form = Subscriptions()
         title_dict = {
-            "ms_id": "MS28017677",
+            "ms_id": "MS5021914",
             "ms_payload": {'branch_id': '2'}
         }
         json_data = json.dumps(title_dict)
@@ -795,7 +973,7 @@ def subscriptions_list(request):
     print('code', code1)
 
     dict1 = {
-        "ms_id": "MS6019799",
+        "ms_id": "MS5029554",
         "ms_payload": {
             "code": code1,
         }
@@ -835,7 +1013,7 @@ def nominees(request):
             print("Uploaded Files:", request.FILES)
 
             dict2 = {
-                "ms_id": "MS28011689",
+                "ms_id": "MS5024020",
                 "ms_payload": cleaned_data if files else cleaned_data
             }
 
@@ -850,7 +1028,7 @@ def nominees(request):
     else:
         form = Nominee()
         title_dict = {
-            "ms_id": "MS28017677",
+            "ms_id": "MS5021914",
             "ms_payload": {'branch_id': '2'}
         }
         json_data = json.dumps(title_dict)
@@ -882,7 +1060,7 @@ def nominees_list(request):
     print('code', code1)
 
     dict1 = {
-        "ms_id": "MS7016574",
+        "ms_id": "MS5027124",
         "ms_payload": {
             "code": code1,
         }
@@ -908,7 +1086,7 @@ def get_tenure_details(request, loantype_id):
     print('code', loantype_id)
     
     dict1 = {
-        "ms_id": "MS7018031",
+        "ms_id": "MS5025311",
         "ms_payload": {
             "loantype_id": loantype_id,
         }
@@ -950,21 +1128,17 @@ def account_list(request):
     print('code', code1)
 
     dict1 = {
-        "ms_id": "MS6012950",
+        "ms_id": "MS5025739",
         "ms_payload": {
             "code": code1,
         }
     }
     json_data = json.dumps(dict1)
-
     response1 = call_post_method_without_token(url, json_data)
     print('response1', response1)
-
     response = response1.content
     print('response', response)
-
     response_data = json.loads(response)
-
     # Ensure response_data is a list
     accounts = response_data if isinstance(response_data, list) else [response_data]
     print('accounts', accounts)
@@ -990,15 +1164,15 @@ def payment_process(request, schedule_id, loan_application_id):
     # Define mapping for loan statuses to ms_id and payload
     loan_status_map = {
         "restructured": {
-            "ms_id": "MS8018159",
+            "ms_id": "MS5029260",
             "payload": {"schedule_id": schedule_id, "app_id": loan_application_id}
         },
         "Cleared balance and moved for refinance": {
-            "ms_id": "MS8017919",
-            "payload": {"code": code1, "loan_application_id": loan_application_id}
+            "ms_id": "MS5023793",
+            "payload": {"schedule_id": schedule_id, "app_id": loan_application_id}
         },
-        "approved": {
-            "ms_id": "MS8012265",
+        "Approved": {
+            "ms_id": "MS5027217",
             "payload": {"schedule_id": schedule_id, "app_id": loan_application_id}
         },
     }
@@ -1035,19 +1209,20 @@ def payment_process(request, schedule_id, loan_application_id):
     # Add the interest amount (if any) to the payable amount
     interest_amount = schedule_data['interest_amount'] if schedule_data['interest_amount'] else 0
     schedule_data['payable_amount'] = payable_amount + schedule_data['instalment_amount'] + interest_amount
+    installment=schedule_data['instalment_amount']
     total = round(schedule_data['payable_amount'], 2)
     print('Total payable amount:', total)
 
     if request.method == 'POST':
         print('loan_status',loan_status)
         if loan_status == "restructured":
-            ms_id = "MS8019301"
+            ms_id = "MS5027748"
             payload = {"schedule_id": schedule_id, "app_id": loan_application_id}
         elif loan_status == "Cleared balance and moved for refinance":
-            ms_id = "MS8012440"
-            payload = {"code": code1, "loan_application_id": loan_application_id}
-        elif loan_status == "approved":
-            ms_id = "MS8016276"
+            ms_id = "MS5025007"
+            payload = {'schedule_id':schedule_id,'app_id':loan_application_id,'paid_amount':total,'installment':installment,'penalty':payable_amount,'interest_amount':interest_amount}
+        elif loan_status == "Approved":
+            ms_id = "MS5029005"
             payload = {'schedule_id': schedule_id, 'app_id': loan_application_id, 'paid_amount': total, 'penalty': payable_amount}
         else:
             return render(request, 'payment_process.html', {'error_message': 'Application is under disbursement process. Please check back later.'})
@@ -1076,3 +1251,35 @@ def calculate_penalty(repayment_date, paid_amount, instalment_amount, penalty_ra
         penalty_amount = instalment_amount * penalty_rate * overdue_days
         return round(penalty_amount, 2), overdue_days
     return 0.0, 0
+
+
+def loan_refinance(request,member,loanapp,loan):
+    print('member',member)
+    print('loanapp',loanapp)
+    print('loan',loan)
+    dict1 = {
+        "ms_id": "MS5023262",
+        "ms_payload": {
+            "loanapp_id": loanapp,
+            "branch_id":2,
+        }
+    }
+    json_data = json.dumps(dict1)
+    response1 = call_post_method_without_token(url, json_data)
+    print('response1', response1)
+    response = response1.content
+    print('response', response)
+    
+    dict1 = {
+        "ms_id": "MS5024703",
+        "ms_payload": {
+            "loantype_id": loanapp,
+            "branch_id":2,
+        }
+    }
+    json_data = json.dumps(dict1)
+    response1 = call_post_method_without_token(url, json_data)
+    print('response1', response1)
+    response = response1.content
+    print('response', response)
+    return render(request,'refinance.html')

@@ -4,11 +4,12 @@
 {% block body_block %}
 <h3>Loan Applications</h3>
 <div class="card px-2 py-2 mt-5">
-  <div class="col-md-2 mb-2">
+  <div class="col-md-4 mb-2 d-flex">
     <a href="{% url 'applyloan' %}" class="btn btn-primary text-decoration-none text-white me-2">
         Apply Loan
     </a>
-  </div>
+   
+</div>
 
   {% if loans %}
   <div class="table-responsive">
@@ -17,13 +18,15 @@
         <tr class="table-primary">
           <th>S.No</th>
           {% comment %} <th>Code</th> {% endcomment %}
-          <th>Checked On</th>
-          <th>Loan Amount</th>
+          {% comment %} <th>Checked On</th> {% endcomment %}
+          <th>Loan </th>
+          <th>Application Number</th>
           <th>Loan Purpose</th>
-          <th>Application Status</th>
-          <th>Interest Rate</th>
+          <th> Status</th>
+          <th>Interest </th>
           <th>Tenure</th>
           <th>Disbursement Type</th>
+          <th colspan=2>Action </th>
         </tr>
       </thead>
       <tbody>
@@ -31,13 +34,20 @@
         <tr>
           <td>{{ forloop.counter }}</td>
           {% comment %} <td>{{ loan.code|default:"-" }}</td> {% endcomment %}
-          <td>{{ loan.checked_on|default:"-" }}</td>
-          <td>{{ loan.loan_amount|default:"-" }}</td>
+          {% comment %} <td>{{ loan.checked_on|default:"-" }}</td> {% endcomment %}
+          <td>{{ loan.loan_amount|default:"-"|floatformat:2 }}</td>
+          <td>{{ loan.application_id|default:"-" }}</td>
           <td>{{ loan.loan_purpose|default:"-" }}</td>
           <td>{{ loan.application_status|default:"-" }}</td>
           <td>{{ loan.interest_rate|default:"-" }}</td>
           <td>{{ loan.tenure|default:"-" }}</td>
           <td>{{ loan.disbursement_type|default:"-" }}</td>
+          <td> <a href="{% url '' %}" class="btn btn-secondary text-decoration-none text-white me-2">
+             Restructure 
+        </a>
+        <a href="{% url 'loan-refinance' loan.member_id loan.code loan.loantype%}" class="btn btn-success text-decoration-none text-white">
+           Refinance 
+        </a></td>
         </tr>
         {% endfor %}
       </tbody>

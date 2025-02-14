@@ -44,7 +44,8 @@
                 <div class="progress mt-2" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar bg-primary" style="width: 50%"></div>
                 </div>
-                
+                <p class="mt-2">Paid Repayments</p>
+
             </div>
             
         </div>
@@ -80,7 +81,7 @@
                 </h5>
                 <div class="d-flex align-items-center">
                     <h6 class="text-muted mb-0 me-2"></h6>
-                    <h4 class="mb-0 text-info">{{ desired_data.amount_paid }}</h4>
+                    <h4 class="mb-0 text-info">{{ desired_data.amount_paid|default:"-"|floatformat:2 }}</h4>
                 </div>
                 <div class="progress mt-2" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar bg-info" style="width: 50%"></div>
@@ -122,7 +123,7 @@
                 </h5>
                 <div class="d-flex align-items-center">
                     <h6 class="text-muted mb-0 me-2"></h6>
-                    <h4 class="mb-0 text-danger">{{ loan_amount }}</h4>
+                    <h4 class="mb-0 text-danger">{{ loan_amount|floatformat:2 }}</h4>
                 </div>
                 <div class="progress mt-2" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar bg-danger" style="width: 50%"></div>
@@ -131,7 +132,44 @@
             </div>
         </div>
     </div>
-
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title d-flex align-items-center gap-2">
+                    <iconify-icon icon="mdi:earth" class="fs-5 text-success"></iconify-icon>
+                    <span class="h6 pt-2">Wallet Balance</span>
+                </h5>
+                <div class="d-flex align-items-center">
+                    <h6 class="text-muted mb-0 me-2">KES</h6>
+                    <h4 class="mb-0 text-success">{{ wallet_balance|floatformat:2 }}</h4>
+                </div>
+                <div class="progress mt-2" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar bg-success" style="width: 50%"></div>
+                </div>
+                <p class="mt-2">Wallet Balance</p>
+            </div>
+        </div>
+        
+    </div>
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title d-flex align-items-center gap-2">
+                    <iconify-icon icon="mdi:earth" class="fs-5 text-info"></iconify-icon>
+                    <span class="h6 pt-2">Cashbook Balance</span>
+                </h5>
+                <div class="d-flex align-items-center">
+                    <h6 class="text-muted mb-0 me-2">KES</h6>
+                    <h4 class="mb-0 text-info">{{ cashbook_balance|floatformat:2 }}</h4>
+                </div>
+                <div class="progress mt-2" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar bg-info" style="width: 50%"></div>
+                </div>
+                <p class="mt-2">Cashbook Balance</p>
+            </div>
+        </div>
+        
+    </div>
     <!-- Running Loans Card -->
     {% comment %} <div class="col-lg-3 col-md-6 mb-4">
         <div class="card shadow-sm border-0">

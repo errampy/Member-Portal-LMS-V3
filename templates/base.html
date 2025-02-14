@@ -107,7 +107,7 @@ body {
         <nav class="sidebar-nav">
           <ul id="sidebarnav">
             <li class="sidebar-item">
-              <a class="sidebar-link" href="{% url 'dashboard' %}">
+              <a id="dashboard" class="sidebar-link" href="{% url 'dashboard' %}">
                 <i class="bi bi-house-door"></i>
                 <span class="hide-menu">Dashboard</span>
               </a>
@@ -208,7 +208,17 @@ body {
                 <span class="hide-menu">Downloads</span>
               </a>
             </li>
-           
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'account-entry' %}">
+                <i class="bi bi-card-list"></i>               
+                <span class="hide-menu">Account Statement</span>
+              </a>
+            </li><li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'loan-statement' %}">
+                <i class="bi bi-card-list"></i>               
+                <span class="hide-menu">Loan Statement</span>
+              </a>
+            </li>
           </ul>
         </nav>
         <!-- End Sidebar navigation -->
@@ -313,10 +323,33 @@ body {
 });
   </script>
 </body>
-{% comment %} <script type="text/javascript">
-  document.getElementById("dashboard").addEventListener("click", function() {
-      window.location.href = "/loanapplication/";  // Redirect to loanapplication page
-      window.location.href = "/dashboard/";  // After that, go to dashboard
-  });
-</script> {% endcomment %}
+<script>
+{% comment %} document.getElementById("dashboard").addEventListener("click", function() {
+  sessionStorage.setItem("redirectToDashboard", "true");
+  window.location.href = "/loanapplication/";
+});
+
+if (sessionStorage.getItem("redirectToDashboard") === "true") {
+  sessionStorage.removeItem("redirectToDashboard");
+  window.location.href = "/dashboard/";
+} {% endcomment %}
+document.addEventListener("DOMContentLoaded", function () {
+  let dashboardLink = document.getElementById("dashboard");
+
+  if (dashboardLink) {
+      dashboardLink.addEventListener("click", function (event) {
+          event.preventDefault(); // Prevent default navigation
+          sessionStorage.setItem("redirectToDashboard", "true");
+          window.location.href = "/loanapplication/";
+      });
+  }
+
+  if (sessionStorage.getItem("redirectToDashboard") === "true") {
+      sessionStorage.removeItem("redirectToDashboard");
+      window.location.href = "/dashboard/";
+  }
+});
+
+</script> 
+
 </html>
