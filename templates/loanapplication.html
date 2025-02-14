@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_block %}
+<h3>Loan Applications</h3>
+<div class="card px-2 py-2 mt-5">
+  <div class="col-md-2 mb-2">
+    <a href="{% url 'applyloan' %}" class="btn btn-primary text-decoration-none text-white me-2">
+        Apply Loan
+    </a>
+  </div>
+
+  {% if loans %}
+  <div class="table-responsive">
+    <table class="table table-bordered text-nowrap align-middle mb-0">
+      <thead>
+        <tr class="table-primary">
+          <th>S.No</th>
+          {% comment %} <th>Code</th> {% endcomment %}
+          <th>Checked On</th>
+          <th>Loan Amount</th>
+          <th>Loan Purpose</th>
+          <th>Application Status</th>
+          <th>Interest Rate</th>
+          <th>Tenure</th>
+          <th>Disbursement Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for loan in loans %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          {% comment %} <td>{{ loan.code|default:"-" }}</td> {% endcomment %}
+          <td>{{ loan.checked_on|default:"-" }}</td>
+          <td>{{ loan.loan_amount|default:"-" }}</td>
+          <td>{{ loan.loan_purpose|default:"-" }}</td>
+          <td>{{ loan.application_status|default:"-" }}</td>
+          <td>{{ loan.interest_rate|default:"-" }}</td>
+          <td>{{ loan.tenure|default:"-" }}</td>
+          <td>{{ loan.disbursement_type|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-warning mt-3" role="alert">
+      No loan applications available.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

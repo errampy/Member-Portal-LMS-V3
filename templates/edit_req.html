@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_block %}
+<div class="container-fluid bg-white mt-2">
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs mt-3 pt-4" id="formTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="basic-info-tab" data-bs-toggle="tab" href="#basic-info" role="tab" aria-controls="basic-info" aria-selected="true">Basic Information</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="identification-tab" data-bs-toggle="tab" href="#identification" role="tab" aria-controls="identification" aria-selected="false">Next of Kin</a>
+        </li>
+    </ul>
+
+    <!-- Tabs Content -->
+    <div class="tab-content" id="formTabsContent">
+        <!-- Basic Information Tab -->
+        <div class="tab-pane fade show active" id="basic-info" role="tabpanel" aria-labelledby="basic-info-tab">
+            <form action="/your-form-action" method="POST">
+                <h5 class="card-title mt-3">Basic Information</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="title" class="required">Title</label>
+                        <select class="form-control" id="title" name="title" required>
+                            <option value="">Select Title</option>
+                            <option value="Mr">Mr</option>
+                            <option value="Mrs">Mrs</option>
+                            <option value="Miss">Miss</option>
+                            <option value="Dr">Dr</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="first_name" class="required">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="middle_name">Middle Name</label>
+                        <input type="text" class="form-control" id="middle_name" name="middle_name">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="last_name" class="required">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="kra_pin" class="required">KRA PIN</label>
+                        <input type="text" class="form-control" id="kra_pin" name="kra_pin" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="type_of_resident" class="required">Type of Resident</label>
+                        <select class="form-control" id="type_of_resident" name="type_of_resident" required>
+                            <option value="">Select Type</option>
+                            <option value="Kenyan">Kenyan</option>
+                            <option value="Non-Kenyan">Non-Kenyan</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="gender" class="required">Gender</label>
+                        <select class="form-control" id="gender" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="marital_status">Marital Status</label>
+                        <select id="marital_status" name="marital_status" class="form-control">
+                            <option value="single">Single</option>
+                            <option value="married">Married</option>
+                            <option value="widowed">Widowed</option>
+                            <option value="divorced">Divorced</option>
+                            <option value="withheld">Withheld</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" name="dob" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3 mb-3">Submit</button>
+            </form>
+        </div>
+
+        <!-- Identification & Allocation Tab -->
+        <div class="tab-pane fade" id="identification" role="tabpanel" aria-labelledby="identification-tab">
+            <form action="/your-form-action" method="POST">
+                <h5 class="card-title mt-3 mb-3">Next of kin</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="identification_type" class="required">Identification Type</label>
+                        <select class="form-control" id="identification_type" name="identification_type" required>
+                            <option value="">Select Identification Type</option>
+                            <option value="ID">ID</option>
+                            <option value="Passport">Passport</option>
+                            <option value="Driving License">Driving License</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="name" class="required">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="phone_number" class="required">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone_number" name="phone_number" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="identification_number" class="required">Identification Number</label>
+                        <input type="text" class="form-control" id="identification_number" name="identification_number" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="allocation" class="required">Allocation</label>
+                        <input type="text" class="form-control" id="allocation" name="allocation" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3 mb-3">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

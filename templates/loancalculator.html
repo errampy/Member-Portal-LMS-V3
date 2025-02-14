@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_block %}
+
+<div class="container mt-5">
+    <div class="card px-4 py-4 shadow-lg">
+        <h3 class="text-center mb-4">Loan Calculator</h3>
+        <form id="loanCalculatorForm" method="POST">
+            {% csrf_token %}
+
+            <!-- Loan Type -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="loantype" class="form-label">Loan Type</label>
+                    <select id="loantype" name="loantype" class="form-control form-control-lg" required>
+                        <option value="" disabled selected>Select Loan Type</option>
+                        {% for loan in loan_types %}
+                        <option value="{{ loan.code }}">{{ loan.loantype }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+                <div class="col-md-6 mb-3">
+                    <label for="loan_amount" class="form-label">Loan Amount</label>
+                    {{ form.loan_amount }}
+                </div>
+           
+                <div class="col-md-6 mb-3">
+                    <label for="interest_rate_display" class="form-label">Interest Rate</label>
+                    <input type="text" id="interest_rate_display" name="interest_rate" class="form-control form-control-lg" readonly>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="loan_calculation_method_display" class="form-label">Loan Calculation Method</label>
+                    <input type="text" id="loan_calculation_method_display" name="loan_calculation_method" class="form-control form-control-lg" readonly>
+                </div>
+
+            
+            </div>
+
+            <!-- Tenure Type -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="tenure_type" class="form-label">Tenure Type</label>
+                    {{ form.tenure_type }}
+                </div>
+           
+                <div class="col-md-6 mb-3">
+                    <label for="repayment_schedule" class="form-label">Repayment Schedule</label>
+                    {{ form.repayment_schedule }}
+                </div>
+            </div>
+
+            <!-- Repayment Mode -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="repayment_mode" class="form-label">Repayment Mode</label>
+                    {{ form.repayment_mode }}
+                </div>
+           
+                <div class="col-md-6 mb-3">
+                    <label for="interest_basics" class="form-label">Interest Basics</label>
+                    {{ form.interest_basics }}
+                </div>
+            </div>
+
+            <!-- Loan Calculation Method -->
+            <div class="row">
+               
+                <div class="col-md-6 mb-3">
+                    <label for="tenure" class="form-label">Tenure</label>
+                    {{ form.tenure }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="repayment_start_date" class="form-label">Repayment Start Date</label>
+                    {{ form.repayment_start_date }}
+                </div>
+            </div>
+
+            <!-- Submit button -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg px-5">Calculate</button>
+
+            </div>
+        </form>
+    </div>
+</div>
+{% if records %}
+<!-- Loan Payment Details and Pie Chart -->
+<div class="container mt-5" id="resultCard">
+    <div class="card">
+        <div class="row">
+            <!-- Pie Chart Section -->
+            <div class="col-md-6 mb-3">
+              <canvas id="loanChart" width="100" height="150" ></canvas>
+            </div>
+
+            <!-- Payment Details Section -->
+            <div class="col-md-6">
+                <div class="card-body">
+                    <h5 class="card-title">Loan Payment Details</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Total Payments
+                            <span id="totalAmount">${{total_payments|floatformat:2 }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Total Interest
+                            <span id="totalInterest">${{total_interest|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+                    <!-- View Table Button -->
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-warning mt-3" id="viewTableBtn" style="display: none;" onclick="showTable()">View Table</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table Card Container (Hidden by default) -->
+<div class="card mt-3" id="dataTable">
+    <div class="card-header">
+        <h5 class="card-title">Loan Calculation Table</h5>
+    </div>
+    <div class="card-body table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Opening Balance</th>
+                    <th>Principal</th>
+                    <th>Interest</th>
+                    <th>Installment</th>
+                    <th>Closing Balance</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in records %}
+                <tr>
+                    <td>{{data.Period}}</td>
+                    <td>{{data.Opening_Balance}}</td>
+                    <td>{{data.Principal}}</td>
+                    <td>{{data.Interest}}</td>
+                    <td>{{data.Installment}}</td>
+                    <td>{{data.Closing_Balance}}</td>
+                    <td>{{data.Due_Date}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+</div>
+</div>
+</section>
+</main><!-- End #main -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+const loanTypeSelect = document.getElementById('id_loantype');
+let minLoanAmount = 0;
+let maxLoanAmount = 0;
+
+// Adding the event listener to detect change in loan type selection
+loanTypeSelect.addEventListener('change', function (event) {
+  const loanTypeId = event.target.value;
+  if (loanTypeId) {
+      // Make AJAX request to the Django backend to fetch loan details
+      fetch(`/loan_application/get_loan_type_details/${loanTypeId}/`)
+          .then(response => response.json())
+          .then(data => {
+              if (data.status === 'success') {
+                  // Dynamically update the fields with the response data
+                  document.getElementById('id_interest_rate').value = data.interest_rate;
+                  document.getElementById('id_loan_calculation_method').value = data.loan_calculation_method;
+
+                  // Set the loan amount validation range
+                  minLoanAmount = data.min_loan_amt || 0;
+                  maxLoanAmount = data.max_loan_amt || 0;
+              } else {
+                  console.error('Error:', data.message);
+              }
+          })
+          .catch(error => console.error('Error:', error));
+  }
+});
+
+// Validate loan amount when the user submits the form
+const form = document.getElementById('loan-calculator-form');
+form.addEventListener('submit', function (event) {
+  const loanAmountInput = document.getElementById('id_loan_amount');
+  const loanAmount = parseFloat(loanAmountInput.value);
+
+  if (isNaN(loanAmount) || loanAmount < minLoanAmount || loanAmount > maxLoanAmount) {
+      event.preventDefault();  // Prevent form submission
+      alert(`Loan amount must be between ${minLoanAmount} and ${maxLoanAmount}`);
+  }
+});
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+const ctx = document.getElementById('loanChart').getContext('2d');
+total_payment = {{total_payments|floatformat:2 }};
+total_interest = {{total_interest|floatformat:2 }};
+new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Total Amount', 'Total Interest'],
+        datasets: [{
+            data: [total_payment, total_interest], // Adjust these values accordingly
+            backgroundColor: ['#007bff', '#ffc107'],
+        }]
+    }
+});
+});
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var loanDetails = {}; // Store fetched loan details for validation
+    
+        $('#loantype').change(function () {
+            var loantypeId = $(this).val(); // Get selected loan type ID
+            
+            if (loantypeId) {
+                // Using jQuery's $.ajax() method
+                $.ajax({
+                    url: '/get-tenure-details/' + loantypeId + '/',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            // Store loan details globally
+                            loanDetails = data;
+    
+                            // Update the fields with fetched data
+                            $('#interest_rate_display').val(data.interest_rate || 'N/A');
+                            $('#loan_calculation_method_display').val(data.loan_calculation_method || 'N/A');
+                        } else {
+                            console.error('Error:', data.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', error);
+                    }
+                });
+            } else {
+                console.error('No loan type selected.');
+            }
+        });
+    
+        // Move form validation outside AJAX success function
+        
+    });
+</script>    
+{% endblock %}

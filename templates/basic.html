@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .required::after {
+            content: " *";
+            color: red;
+        }
+    </style>
+</head>
+<body>
+   
+<div class="container-fluid mt-5">
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs" id="formTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab1-tab" data-bs-toggle="tab" href="#tab1" role="tab">1. Basic Information</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab2-tab" data-bs-toggle="tab" href="#tab2" role="tab">2. Communication</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab3-tab" data-bs-toggle="tab" href="#tab3" role="tab">3. Employment Details</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab4-tab" data-bs-toggle="tab" href="#tab4" role="tab">4. Beneficiaries</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab5-tab" data-bs-toggle="tab" href="#tab5" role="tab">5. Subscriptions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab6-tab" data-bs-toggle="tab" href="#tab6" role="tab">6. Accounts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab7-tab" data-bs-toggle="tab" href="#tab7" role="tab">7. Attachments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab8-tab" data-bs-toggle="tab" href="#tab8" role="tab">8. Submit</a>
+                </li>
+            </ul>
+        </div>
+    
+        <form id="multiTabForm" class="needs-validation" novalidate>
+            <div class="tab-content mt-3" id="formTabContent">
+                <!-- Tab 1: Basic Information -->
+                <div class="tab-pane fade show active" id="tab1" role="tabpanel">
+                    <div class="card-body">
+                        <h5 class="card-title">Basic Information</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.category_type.id_for_label }}" class="form-label {% if form.category_type.field.required %}required-field{% endif %}">{{ form.category_type.label }}</label>
+                                {{ form.category_type }}
+                              </div>
+                              <div class="col-md-4 mb-3">
+                                <label for="{{ form.category_name.id_for_label }}" class="form-label {% if form.category_name.field.required %}required-field{% endif %}">{{ form.category_name.label }}</label>
+                                {{ form.category_name }}
+                              </div>
+                              <div class="col-md-4 mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label {% if form.category.field.required %}required-field{% endif %}">{{ form.category.label }}</label>
+                                {{ form.category }}
+                              </div>
+                              <div class="col-md-4 mb-3">
+                                <label for="{{ form.recrited_by.id_for_label }}" class="form-label {% if form.recrited_by.field.required %}required-field{% endif %}">{{ form.recrited_by.label }}</label>
+                                {{ form.recrited_by }}
+                              </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.relationship_officer.id_for_label }}" class="form-label {% if form.relationship_officer.field.required %}required-field{% endif %}">{{ form.relationship_officer.label }}</label>
+                                {{ form.relationship_officer }}
+                              </div>
+                              <div class="col-md-4 mb-3">
+                                <label for="{{ form.department_code.id_for_label }}" class="form-label {% if form.department_code.field.required %}required-field{% endif %}">{{ form.department_code.label }}</label>
+                              {{ form.department_code }}
+                            </div>
+                      
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.title.id_for_label }}" class="form-label {% if form.title.field.required %}required-field{% endif %}">{{ form.title.label }}</label>
+                                {{ form.title }}
+                              </div>
+                      
+                            <div class="col-md-4 mb-3">
+                                <label for="first_name" class="required">First Name</label>
+                                <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="middle_name">Middle Name</label>
+                                <input type="text" class="form-control" id="middle_name" name="middle_name">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="last_name" class="required">Last Name</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="kra_pin" class="required">KRA PIN</label>
+                                <input type="text" class="form-control" id="kra_pin" name="kra_pin" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="type_of_resident" class="required">Type of Resident</label>
+                                <select class="form-control" id="type_of_resident" name="type_of_resident" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Kenyan">Kenyan</option>
+                                    <option value="Non-Kenyan">Non-Kenyan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="gender" class="required">Gender</label>
+                                <select class="form-control" id="gender" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="marital_status">Marital Status</label>
+                                <select id="marital_status" name="marital_status" class="form-control">
+                                  <option value="single">Single</option>
+                                  <option value="married">Married</option>
+                                  <option value="widowed">Widowed</option>
+                                  <option value="divorced">Divorced</option>
+                                  <option value="withheld">Withheld</option>
+                                </select>
+                              </div>
+                            
+                              <!-- Date of Birth -->
+                              <div class="col-md-4">
+                                <label for="dob">Date of Birth</label>
+                                <input type="date" id="dob" name="dob" class="form-control" required>
+                              </div>
+                        </div>
+                        <button type="button" class="btn btn-primary float-end mb-3" onclick="nextTab(1)">Next</button>
+                    </div>
+                </div>
+                
+                <!-- Tab 2: Communication -->
+                <div class="tab-pane fade" id="tab2" role="tabpanel">
+                    <div class="card-body">
+                        <h5 class="card-title">Communication</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="required">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="primary_phone_no" class="required">Primary Phone No</label>
+                                <input type="tel" class="form-control" id="primary_phone_no" name="primary_phone_no" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="county">County</label>
+                                <select id="county" name="county" class="form-control">
+                                  <!-- Options will be dynamically populated or added here -->
+                                  <option value="">Select a county</option>
+                                </select>
+                              </div>
+                              <div class="col-md-6">
+                                <label for="sub_county">Sub-County</label>
+                                <select id="sub_county" name="sub_county" class="form-control">
+                                  <!-- Options will be dynamically populated or added here -->
+                                  <option value="">Select a sub-county</option>
+                                </select>
+                              </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="national_id">National ID</label>
+                                <input type="text" id="national_id" name="national_id" class="form-control" maxlength="20">
+                              </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="alt_phone_no">Alternative Phone No</label>
+                                <input type="tel" class="form-control" id="alt_phone_no" name="alt_phone_no">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="residential_town" class="required">Residential Town</label>
+                                <input type="text" class="form-control" id="residential_town" name="residential_town" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="address" class="required">Address</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="residential_estate">Residential Estate</label>
+                                <input type="text" class="form-control" id="residential_estate" name="residential_estate">
+                            </div>
+                           
+                        </div>
+                        <button type="button" class="btn btn-secondary mb-3 float-start" onclick="prevTab(2)">Previous</button>
+                        <button type="button" class="btn btn-primary mb-3 float-end" onclick="nextTab(2)">Next</button>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Employment Details -->
+                <div class="tab-pane fade" id="tab3" role="tabpanel">
+                    <div class="card-body">
+                        <h5 class="card-title">Employment Details</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="employment_type" class="required">Employment Type</label>
+                                <select class="form-control" id="employment_type" name="employment_type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Permanent">Permanent</option>
+                                    <option value="Contract">Contract</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="employer" class="required">Employer</label>
+                                <input type="text" class="form-control" id="employer" name="employer" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="department" class="required">Department</label>
+                                <input type="text" class="form-control" id="department" name="department" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="station" class="required">Station</label>
+                                <input type="text" class="form-control" id="station" name="station" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="designation" class="required">Designation</label>
+                                <input type="text" class="form-control" id="designation" name="designation" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="payroll_no" class="required">Payroll No</label>
+                                <input type="text" class="form-control" id="payroll_no" name="payroll_no" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                         <!-- Customer Income -->
+  <div class="col-md-6">
+    <label for="customer_income">Customer Income</label>
+    <input type="number" id="customer_income" name="customer_income" class="form-control" required>
+  </div>
+
+  <!-- Existing Liabilities -->
+  <div class="col-md-6">
+    <label for="existing_liabilities">Existing Liabilities</label>
+    <input type="number" id="existing_liabilities" name="existing_liabilities" class="form-control">
+  </div></div>
+  <div class="row mb-3">
+
+  <!-- Expiry Date -->
+  <div class="col-md-6">
+    <label for="expiry_date">Expiry Date</label>
+    <input type="date" id="expiry_date" name="expiry_date" class="form-control">
+  </div>
+
+  <!-- Is Active -->
+  <div class="col-md-6 mt-2  form-check">
+    <input type="checkbox" id="is_active" name="is_active" class="form-check-input">
+    <label for="is_active" class="form-check-label">Is Active</label>
+  </div></div>
+                        <button type="button" class="btn btn-secondary mb-3 float-start" onclick="prevTab(3)">Previous</button>
+                        <button type="button" class="btn btn-primary mb-3 float-end" onclick="nextTab(3)">Next</button>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Beneficiaries -->
+                <div class="tab-pane fade" id="tab4" role="tabpanel">
+                    <div class="card-body">
+
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title">Beneficiaries</h5>
+                            <button type="button" class="btn btn-primary mb-3" onclick="openBeneficiaryModal()">+ Add Beneficiary</button>
+
+                        </div>
+                    
+                        <!-- Beneficiary Modal -->
+    <div class="modal fade" id="beneficiaryModal" tabindex="-1" aria-labelledby="beneficiaryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="beneficiaryModalLabel">Add Beneficiary</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="beneficiaryForm">
+                        <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="beneficiaryType" class="form-label">Beneficiary Type</label>
+                            <select class="form-select" id="beneficiaryType" required>
+                                <option value="">Select Type</option>
+                                <option value="Primary">Primary</option>
+                                <option value="Secondary">Secondary</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="identificationType" class="form-label">Identification Type</label>
+                            <select class="form-select" id="identificationType" required>
+                                <option value="">Select Type</option>
+                                <option value="ID">ID</option>
+                                <option value="Passport">Passport</option>
+                            </select>
+                        </div></div>
+                        <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="relation" class="form-label">Relation</label>
+                            <input type="text" class="form-control" id="relation" required>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="beneficiaryPhoneNo" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="beneficiaryPhoneNo" required>
+                        </div></div>
+                        <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="beneficiaryFullName" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="beneficiaryFullName" required>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="beneficiaryDob" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="beneficiaryDob" required>
+                        </div></div>
+                        <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="beneficiaryIdNo" class="form-label">ID Number</label>
+                            <input type="text" class="form-control" id="beneficiaryIdNo" required>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="allocation" class="form-label">Allocation (%)</label>
+                            <input type="number" class="form-control" id="allocation" required min="0" max="100">
+                        </div></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary mb-3" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary mb-3" onclick="addBeneficiary()">Add Beneficiary</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let beneficiaries = [];
+
+        function openBeneficiaryModal() {
+            const modal = new bootstrap.Modal(document.getElementById('beneficiaryModal'));
+            modal.show();
+        }
+
+        function addBeneficiary() {
+            const form = document.getElementById('beneficiaryForm');
+            if (form.checkValidity()) {
+                const beneficiary = {
+                    type: document.getElementById('beneficiaryType').value,
+                    fullName: document.getElementById('beneficiaryFullName').value,
+                    relation: document.getElementById('relation').value,
+                    allocation: document.getElementById('allocation').value
+                };
+                beneficiaries.push(beneficiary);
+                updateBeneficiariesTable();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('beneficiaryModal'));
+                modal.hide();
+                form.reset();
+            } else {
+                form.reportValidity();
+            }
+        }
+</script>
+                        <button type="button" class="btn btn-secondary mb-3 float-start" onclick="prevTab(4)">Previous</button>
+                        <button type="button" class="btn btn-primary mb-3 float-end" onclick="nextTab(4)">Next</button>
+                    </div>
+                </div>
+
+                
+                <div class="tab-pane fade" id="tab5" role="tabpanel">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">Subscriptions</h5>
+                        <button type="button" class="btn btn-primary mb-3">+ Add Subscriptions</button>
+                        </div>
+                        <button type="button" class="btn btn-secondary mb-3 float-start" onclick="prevTab(5)">Previous</button>
+                        <button type="button" class="btn btn-primary mb-3 float-end" onclick="nextTab(5)">Next</button>
+                    </div>
+                </div>
+
+                <!-- Tab 6: Accounts -->
+                <div class="tab-pane fade" id="tab6" role="tabpanel">
+                    <div class="card-body">
+                        <h5 class="card-title">Accounts</h5>
+                        <div class="row">
+                        <div class="form-check col-md-4">
+                            <input class="form-check-input" type="checkbox" id="atm" name="atm">
+                            <label class="form-check-label" for="atm">ATM</label>
+                        </div>
+                        <div class="form-check col-md-4">
+                            <input class="form-check-input" type="checkbox" id="mobile" name="mobile">
+                            <label class="form-check-label" for="mobile">Mobile</label>
+                        </div></div>
+                        <div class="row">
+                        <div class="col-md-4 form-check">
+                            <input class="form-check-input" type="checkbox" id="fosa" name="fosa">
+                            <label class="form-check-label" for="fosa">FOSA</label>
+                        </div>
+
+  <!-- Protected Account -->
+  <div class="col-md-4 form-check">
+    <input type="checkbox" id="protected_account" name="protected_account" class="form-check-input">
+    <label for="protected_account" class="form-check-label">Protected Account</label>
+  </div></div>
+<div class="row">
+  <!-- Marketing Texts -->
+  <div class="col-md-4 form-check">
+    <input type="checkbox" id="marketing_texts" name="marketing_texts" class="form-check-input">
+    <label for="marketing_texts" class="form-check-label">Marketing Texts</label>
+  </div>
+
+  <!-- E-Statement -->
+  <div class="col-md-4 mb-3 form-check">
+    <input type="checkbox" id="e_statement" name="e_statement" class="form-check-input">
+    <label for="e_statement" class="form-check-label">E-Statement</label>
+  </div></div>
+
+                        <button type="button" class="btn btn-secondary mb-3 float-start" onclick="prevTab(6)">Previous</button>
+                        <button type="button" class="btn btn-primary mb-3 float-end" onclick="nextTab(6)">Next</button>
+                    </div>
+                </div>
+
+                
+                <div class="tab-pane fade" id="tab7" role="tabpanel">
+                    <div class="card-body">
+                        <h5 class="card-title">Attachments</h5>
+                        <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="signature" class="form-label">Signature (Type: jpg, png; size: 1MB)</label>
+                            <input class="form-control" type="file" id="signature" name="signature" accept="image/jpeg,image/png">
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="front_id" class="form-label required">Front ID (Type: jpg, png; size: 1MB)</label>
+                            <input class="form-control" type="file" id="front_id" name="front_id" accept="image/jpeg,image/png" required>
+                        </div></div>
+                        <div class="row">
+                                                    <div class="mb-3 col-md-6">
+                            <label for="back_id" class="form-label required">Back ID (Type: jpg, png; size: 1MB)</label>
+                            <input class="form-control" type="file" id="back_id" name="back_id" accept="image/jpeg,image/png" required>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="passport_image" class="form-label required">Passport Image (Type: jpg, png; size: 1MB)</label>
+                            <input class="form-control" type="file" id="passport_image" name="passport_image" accept="image/jpeg,image/png" required>
+                        </div></div>
+
+                        <button type="button" class="btn btn-secondary mb-3 float-start" onclick="prevTab(7)">Previous</button>
+                        <button type="button" class="btn btn-primary mb-3 float-end" onclick="nextTab(7)">Next</button>
+                    </div>
+                </div>
+
+                <!-- Tab 8: Submit -->
+                <div class="tab-pane fade" id="tab8" role="tabpanel">
+                    <div class="card-body">
+                        <h5 class="card-title">Summary</h5>
+                        <div id="summary"></div>
+                        <button type="button" class="btn btn-secondary mb-3 float-start" onclick="prevTab(8)">Previous</button>
+                        <button type="submit" class="btn btn-success mb-3 float-end">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<script>
+    // Function to navigate to the next tab
+    function nextTab(currentTab) {
+        if (validateTab(currentTab)) {
+            const nextTab = currentTab + 1;
+            if (nextTab <= 8) {
+                const nextTabEl = document.querySelector(`#tab${nextTab}-tab`);
+                const tab = new bootstrap.Tab(nextTabEl);
+                tab.show();
+            }
+        }
+    }
+
+    // Function to navigate to the previous tab
+    function prevTab(currentTab) {
+        const prevTab = currentTab - 1;
+        if (prevTab >= 1) {
+            const prevTabEl = document.querySelector(`#tab${prevTab}-tab`);
+            const tab = new bootstrap.Tab(prevTabEl);
+            tab.show();
+        }
+    }
+
+    // Function to validate the current tab
+    function validateTab(tabNumber) {
+        const currentTab = document.querySelector(`#tab${tabNumber}`);
+        const requiredFields = currentTab.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        return isValid;
+    }
+
+    // Function to generate summary
+    function generateSummary() {
+        const summary = document.getElementById('summary');
+        summary.innerHTML = '';
+
+        const form = document.getElementById('multiTabForm');
+        const formData = new FormData(form);
+
+        for (let [key, value] of formData.entries()) {
+            if (value && !(value instanceof File)) {
+                const label = document.querySelector(`label[for="${key}"]`);
+                const labelText = label ? label.textContent : key;
+                summary.innerHTML += `<p><strong>${labelText}:</strong> ${value}</p>`;
+            }
+        }
+    }
+
+    // Add event listener to the form for form validation
+    document.getElementById('multiTabForm').addEventListener('submit', function(event) {
+        if (!this.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        this.classList.add('was-validated');
+    });
+
+    // Add event listener to generate summary when tab8 is shown
+    document.querySelector('#tab8-tab').addEventListener('shown.bs.tab', generateSummary);
+    
+</script>
+</body>
+</html>

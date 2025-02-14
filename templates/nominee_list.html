@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_block %}
+<h3 class="mt-4">Nominee List</h3>
+
+<div class="card px-3 py-3 mt-4">
+  <!-- Action Button -->
+  <div class="col-md-2 mb-3">
+    <a href="{% url 'nominees' %}" class="btn btn-primary text-decoration-none text-white me-2">
+        New 
+    </a>
+  </div>
+
+  <!-- Nominee List Table -->
+  {% if nominees %}
+  <div class="table-responsive">
+    <table class="table table-bordered text-nowrap align-middle mb-0">
+      <thead>
+        <tr class="table-primary">
+          <th>S.No</th>
+          <th>Identification Type</th>
+          <th>Identification No.</th>
+          <th>Name</th>
+          <th>Date of Birth</th>
+          <th>Phone No.</th>
+          <th>Passport Image</th>
+          <th>Identification Document</th>
+          <th>Is Deactivated</th>
+          <th>Branch</th>
+          <th>Member</th>
+          <th>Relative Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for nominee in nominees %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ nominee.identification_type|default:"-" }}</td>
+          <td>{{ nominee.identification_no|default:"-" }}</td>
+          <td>{{ nominee.name|default:"-" }}</td>
+          <td>{{ nominee.date_of_birth|date:"Y-m-d"|default:"-" }}</td>
+          <td>{{ nominee.phone_no|default:"-" }}</td>
+          <td>
+            {% if nominee.passport_image %}
+              <img src="{{ nominee.passport_image.url }}" alt="Passport Image" class="img-thumbnail" style="max-width: 100px;">
+            {% else %}
+              Not provided
+            {% endif %}
+          </td>
+          <td>
+            {% if nominee.identification_document %}
+              <a href="{{ nominee.identification_document.url }}" target="_blank" class="btn btn-link">View Document</a>
+            {% else %}
+              Not provided
+            {% endif %}
+          </td>
+          <td>{{ nominee.is_deactivate|yesno:"Yes,No"|default:"-" }}</td>
+          <td>{{ nominee.branch|default:"-" }}</td>
+          <td>{{ nominee.member|default:"-" }}</td>
+          <td>{{ nominee.relative_code|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <!-- Alert for No Data -->
+  <div class="alert alert-warning mt-3" role="alert">
+      No nominee data available.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

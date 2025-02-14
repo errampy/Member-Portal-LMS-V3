@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_block %}
+<h3 class="mt-4">Account List</h3>
+
+<div class="card px-3 py-3 mt-4">
+  <!-- Action Button -->
+  <div class="col-md-2 mb-3">
+    <a href="{% url 'account' %}" class="btn btn-primary text-decoration-none text-white me-2">
+        New Account
+    </a>
+  </div>
+
+  <!-- Account List Table -->
+  {% if accounts %}
+  <div class="table-responsive">
+    <table class="table table-bordered text-nowrap align-middle mb-0">
+      <thead>
+        <tr class="table-primary">
+          <th>S.No</th>
+          <th>Bank Name</th>
+          <th>Branch Name</th>
+          <th>IFSC Code</th>
+          <th>Account Number</th>
+          <th>Account Balance</th>
+          <th>Account Status</th>
+          <th>Is Deactivated</th>
+          <th>Branch ID</th>
+          <th>Customer ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for account in accounts %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ account.bank_name|default:"-" }}</td>
+          <td>{{ account.branch_name|default:"-" }}</td>
+          <td>{{ account.ifsc_code|default:"-" }}</td>
+          <td>{{ account.account_number|default:"-" }}</td>
+          <td>{{ account.account_balance|default:"-" }}</td>
+          <td>{{ account.account_status|default:"-" }}</td>
+          <td>{{ account.is_deactivate|yesno:"Yes,No"|default:"-" }}</td>
+          <td>{{ account.branch|default:"-" }}</td>
+          <td>{{ account.customer|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <!-- Alert for No Data -->
+  <div class="alert alert-warning mt-3" role="alert">
+      No account data available.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

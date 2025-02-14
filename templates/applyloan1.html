@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_block %}
+
+<div class="container mt-5">
+    <div class="card px-4 py-4 shadow-lg">
+        <h3 class="text-center mb-4">Loan Application Form</h3>
+        <form id="multiTabForm" method="POST" action="{% url 'applyloan' %}">
+            {% csrf_token %}
+            <!-- Form Content -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="loantype" class="form-label">Loan Type</label>
+                    <select id="loantype" name="loantype" class="form-control form-control-lg" required>
+                        <option value="" disabled selected>Select Loan Type</option>
+                        {% for loan in loan_types %}
+                        <option value="{{ loan.code }}">{{ loan.loantype }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="loan_amount" class="form-label">Loan Amount</label>
+                    <input type="number" id="loan_amount" name="loan_amount" class="form-control form-control-lg" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="interest_rate_display" class="form-label">Interest Rate</label>
+                    <input type="text" id="interest_rate_display" name="interest_rate" class="form-control form-control-lg" readonly>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="loan_calculation_method_display" class="form-label">Loan Calculation Method</label>
+                    <input type="text" id="loan_calculation_method_display" name="loan_calculation_method" class="form-control form-control-lg" readonly>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="disbursement_type" class="form-label">Disbursement Type</label>
+                    <select id="disbursement_type" name="disbursement_type" class="form-control form-control-lg" required>
+                        <option value="one_off">One-off</option>
+                        <option value="trenches">Trenches</option>
+                    </select>
+                </div>
+
+              
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="tenure" class="form-label">Tenure</label>
+                    <input type="number" id="tenure" name="tenure" class="form-control form-control-lg" required>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="tenure_type" class="form-label">Tenure Type</label>
+                    <select id="tenure_type" name="tenure_type" class="form-control form-control-lg" required>
+                        <option value="days">Days</option>
+                        <option value="weeks">Weeks</option>
+                        <option value="months">Months</option>
+                        <option value="years">Years</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="repayment_start_date" class="form-label">Repayment Start Date</label>
+                    <input type="date" id="repayment_start_date" name="repayment_start_date" class="form-control form-control-lg" required>
+                </div>
+            </div>
+
+            <div class="row">
+                
+
+                <div class="col-md-6 mb-3">
+                    <label for="repayment_schedule" class="form-label">Repayment Schedule</label>
+                    <select id="repayment_schedule" name="repayment_schedule" class="form-control form-control-lg" required>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="halfyearly">Half-yearly</option>
+                        <option value="annually">Annually</option>
+                        <option value="one_time">One-time</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="repayment_mode" class="form-label">Repayment Mode</label>
+                    <select id="repayment_mode" name="repayment_mode" class="form-control form-control-lg" required>
+                        <option value="principal_only">Principal Only</option>
+                        <option value="interest_only">Interest Only</option>
+                        <option value="both">Both</option>
+                        <option value="interest_first">Interest First</option>
+                        <option value="principal_end">Principal End</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="interest_basics" class="form-label">Interest Basics</label>
+                    <select id="interest_basics" name="interest_basics" class="form-control form-control-lg" required>
+                        <option value="365">365</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="loan_purpose" class="form-label">Loan Purpose</label>
+                    <textarea id="loan_purpose" name="loan_purpose" rows="3" class="form-control form-control-lg" required></textarea>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description" name="description" rows="3" class="form-control form-control-lg" required></textarea>
+                </div>
+            </div>
+
+            <div class="form-check mb-4">
+                <input type="checkbox" id="is_active" name="is_active" class="form-check-input">
+                <label for="is_active" class="form-check-label">Is Active</label>
+            </div>
+
+            <!-- Submit button -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg px-5">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- jQuery CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $('#loantype').change(function() {
+        var loantypeId = $(this).val();  // Get selected loan type ID
+        
+        if (loantypeId) {
+            // Using jQuery's $.ajax() method
+            $.ajax({
+                url: '/get-tenure-details/' + loantypeId + '/',
+                method: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    if (data.status === 'success') {
+                        // Update the fields with fetched data
+                        $('#interest_rate_display').val(data.interest_rate || 'N/A');
+                        $('#loan_calculation_method_display').val(data.loan_calculation_method || 'N/A');
+                        
+                        // Add submit validation
+                        $('#multiTabForm').submit(function(e) {
+                            var loanAmount = $('#loan_amount').val();
+                            var tenure = $('#tenure').val();
+                            var minLoanAmt = data.min_loan_amt;
+                            var maxLoanAmt = data.max_loan_amt;
+                            var minLoanTerms = data.min_loan_terms;
+                            var maxLoanTerms = data.max_loan_terms;
+    
+                            // Validate loan amount
+                            if (loanAmount < minLoanAmt || loanAmount > maxLoanAmt) {
+                                alert("Loan amount must be between " + minLoanAmt + " and " + maxLoanAmt);
+                                e.preventDefault();  // Prevent form submission
+                                return false;
+                            }
+    
+                            // Validate tenure
+                            if (tenure < minLoanTerms || tenure > maxLoanTerms) {
+                                alert("Tenure must be between " + minLoanTerms + " and " + maxLoanTerms);
+                                e.preventDefault();  // Prevent form submission
+                                return false;
+                            }
+    
+                            // If both validations pass, allow the form to submit
+                            return true;
+                        });
+                    } else {
+                        console.error('Error:', data.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', error);
+                }
+            });
+        } else {
+            console.error('No loan type selected.');
+        }
+    });
+    
+</script>
+
+{% endblock %}

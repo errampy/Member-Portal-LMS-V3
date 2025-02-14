@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_block %}
+<h3>Next of Kin List</h3>
+<div class="card px-2 py-2 mt-5">
+  <div class="col-md-2 mb-2">
+    <a href="{% url 'nextofkinn' %}" class="btn btn-primary text-decoration-none text-white me-2">
+        New
+    </a>
+  </div>
+
+  {% if loan_list %}
+  <div class="table-responsive">
+    <table class="table table-bordered text-nowrap align-middle mb-0">
+      <thead>
+        <tr class="table-primary">
+          <th>S.No</th>
+          <th>Identification Type</th>
+          <th>Identification No.</th>
+          <th>Name</th>
+          <th>Date of Birth</th>
+          <th>Phone No.</th>
+          <th>Branch</th>
+          <th>Relative Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for loan in loan_list %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ loan.identification_type|default:"-" }}</td>
+          <td>{{ loan.identification_no|default:"-" }}</td>
+          <td>{{ loan.name|default:"-" }}</td>
+          <td>{{ loan.date_of_birth|default:"-" }}</td>
+          <td>{{ loan.phone_no|default:"-" }}</td>
+          <td>{{ loan.branch|default:"-" }}</td>
+          <td>{{ loan.relative_code|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-warning mt-3" role="alert">
+      No next of kin data available.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

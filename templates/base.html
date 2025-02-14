@@ -1,0 +1,322 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LMS</title>
+  <link rel="shortcut icon" type="image/png" href="{% static 'assets/images/logos/seodashlogo.png' %}" />
+  <link rel="stylesheet" href="{% static 'assets/css/styles.min.css' %}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="custom-styles.css">
+ <style>
+.sidebar-nav {
+  height: calc(100vh - 70px); /* Adjust 70px based on your header height */
+  overflow-y: auto;
+  padding: 20px 20px;
+}
+
+/* Customize the scrollbar */
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: #fff;
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+}
+
+/* For Firefox */
+.sidebar-nav {
+  scrollbar-width: thin;
+  scrollbar-color: #dad6d6 #f1f1f1;
+}
+
+/* Ensure the sidebar takes full height on mobile */
+@media (max-width: 991px) {
+  .left-sidebar {
+    height: 100%;
+    overflow-y: auto;
+  }
+}
+
+/*Example Styling for the sidebar and main content*/
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+.container {
+  display: flex;
+}
+
+.left-sidebar {
+  width: 250px;
+  background-color: #fff;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-nav li {
+  margin-bottom: 10px;
+}
+
+.sidebar-nav a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  padding: 10px;
+}
+
+.sidebar-nav a:hover {
+  background-color: #ddd;
+}
+</style>
+</head>
+
+<body>
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Start -->
+    <aside class="left-sidebar">
+      <div>
+        <div class="brand-logo d-flex align-items-center justify-content-between">
+         <h3>LMS-Member</h3>
+          <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+            <i class="bi bi-x-lg"></i>
+          </div>
+        </div>
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav">
+          <ul id="sidebarnav">
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'dashboard' %}">
+                <i class="bi bi-house-door"></i>
+                <span class="hide-menu">Dashboard</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'member_profile' %}">
+                <i class="bi bi-person-circle"></i>        
+                                <span class="hide-menu">Member Profile</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'nextofkinnlist' %}">
+                <i class="bi bi-person"></i>                
+                <span class="hide-menu">Next Of Kin </span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'subscriptionslist' %}">
+                <i class="bi bi-house-door"></i>
+                <span class="hide-menu">Subscriptions </span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'nomineelist' %}">
+                <i class="bi bi-person-fill"></i>              
+                  <span class="hide-menu">Nominee </span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'account_list' %}">
+                <i class="bi bi-bank2"></i>               
+                 <span class="hide-menu">Account </span>
+              </a>
+            </li>
+            <li class="nav-small-cap">
+              <span>Main</span>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'deposit' %}">
+                <i class="bi bi-cash"></i>
+                <span class="hide-menu">Deposit</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'accounttransfer' %}">
+                <i class="bi bi-arrow-left-right"></i>
+                <span class="hide-menu">Account Transfer</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'bank' %}">
+                <i class="bi bi-bank"></i>
+                <span class="hide-menu">Bank Transfers</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'loanapplication' %}">
+                <i class="bi bi-filter-square"></i>                
+                <span class="hide-menu">Loan Applications</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'repayment_Schedule' %}">
+                <i class="bi bi-card-list"></i>               
+                
+                <span class="hide-menu">Repayment Schedule</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'loancalculator' %}">
+                <i class="bi bi-calculator"></i>               
+                 <span class="hide-menu">Loan Calculator</span>
+              </a>
+            </li>
+
+            <li class="sidebar-item">
+      
+              
+            </li>
+            <li class="sidebar-item">
+              {% comment %} <a class="sidebar-link" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#guarantorship-submenu" aria-expanded="false">
+                <i class="bi bi-shield"></i>
+                <span class="hide-menu">Guarantorship</span>
+                <i class="bi bi-chevron-down ms-auto"></i>
+              </a> {% endcomment %}
+              <ul class="collapse" id="guarantorship-submenu">
+                <li class="sidebar-item">
+                  <a class="sidebar-link" href="{% url 'req' %}">Requests</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-small-cap">
+              <span>Reports</span>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="{% url 'download' %}">
+                <i class="bi bi-download"></i>
+                <span class="hide-menu">Downloads</span>
+              </a>
+            </li>
+           
+          </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+      </div>
+    </aside>
+    <!--  Sidebar End -->
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+      <!--  Header Start -->
+      <header class="app-header">
+        <nav class="navbar navbar-expand-lg navbar-light">
+          <ul class="navbar-nav">
+            <li class="nav-item d-block d-xl-none">
+              <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+                <i class="bi bi-list"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              
+            </li>
+          </ul>
+          <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+            <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+              <li class="nav-item dropdown">
+                <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <img src="{% static 'assets/images/profile/user-1.jpg' %}" alt="" width="35" height="35" class="rounded-circle">
+                </a>
+                <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                  <div class="message-body">
+                    <a href="{% url 'member_profile' %}" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="bi bi-person"></i>
+                      <p class="mb-0 fs-3">My Profile</p>
+                    </a>
+                    <a href="{% url 'account_list' %}" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="bi bi-envelope"></i>
+                      <p class="mb-0 fs-3">My Account</p>
+                    </a>
+                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                      <i class="bi bi-check-square"></i>
+                      <p class="mb-0 fs-3">My Task</p>
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <!--  Header End -->
+      <div class="container-fluid">
+        {% block body_block %}
+
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+  <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/libs/apexcharts/dist/apexcharts.min.js' %}"></script>
+  <script src="{% static 'assets/libs/simplebar/dist/simplebar.js' %}"></script>
+  <script src="{% static 'assets/js/sidebarmenu.js' %}"></script>
+  <script src="{% static 'assets/js/app.min.js' %}"></script>
+  <script src="{% static 'assets/js/dashboard.js' %}"></script>
+  <script src="custom-script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+  const sidebarToggle = document.getElementById('headerCollapse');
+  const sidebarClose = document.getElementById('sidebarCollapse');
+  const sidebar = document.querySelector('.left-sidebar');
+  const bodyWrapper = document.querySelector('.body-wrapper');
+
+  function toggleMobileSidebar() {
+    sidebar.classList.toggle('show');
+    bodyWrapper.classList.toggle('sidebar-open');
+  }
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', toggleMobileSidebar);
+  }
+
+  if (sidebarClose) {
+    sidebarClose.addEventListener('click', toggleMobileSidebar);
+  }
+
+  // Close sidebar when clicking outside
+  document.addEventListener('click', function(event) {
+    if (!sidebar.contains(event.target) && event.target !== sidebarToggle) {
+      sidebar.classList.remove('show');
+      bodyWrapper.classList.remove('sidebar-open');
+    }
+  });
+
+  // Initialize Bootstrap collapse for sidebar submenus
+  var collapseElements = [].slice.call(document.querySelectorAll('.sidebar-link[data-bs-toggle="collapse"]'))
+  collapseElements.map(function (collapseEl) {
+    return new bootstrap.Collapse(collapseEl, {
+      toggle: false
+    })
+  })
+});
+  </script>
+</body>
+{% comment %} <script type="text/javascript">
+  document.getElementById("dashboard").addEventListener("click", function() {
+      window.location.href = "/loanapplication/";  // Redirect to loanapplication page
+      window.location.href = "/dashboard/";  // After that, go to dashboard
+  });
+</script> {% endcomment %}
+</html>

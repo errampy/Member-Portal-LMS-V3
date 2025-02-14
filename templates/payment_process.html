@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+<body>
+  <main id="main" class="main">
+    <section class="section">
+      <div class="content-wrapper">
+        <!-- Loan Risk Assessment Section -->
+        <a href="{% url 'repayment_Schedule' %}" class="btn btn-primary">Back</a>
+        <br><br>  
+
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Payment Schedule Details</h5>
+                
+                {% if error_message %}
+                  <div class="alert alert-danger mt-3" role="alert">
+                    {{ error_message }}
+                  </div>
+                {% endif %}
+
+                {% if schedule %}
+                <!-- Display Info in a Box -->
+                <div class="info-box" style="border: 1px solid #D7DAE0; padding: 20px; background-color: #FFF;">
+                  <div class="row mb-3">
+                    <div class="col-sm-6">
+                      <strong>Schedule ID:</strong> {{ schedule.schedule_id }}
+                    </div>
+                    <div class="col-sm-6">
+                      <strong>Payment Date:</strong> {{ schedule.repayment_date|default:"-" }}
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-6">
+                      <strong>Penalty Reason:</strong>
+                      {% if schedule.overdue_days %}
+                        <span style="color: red;">Overdue for {{ schedule.overdue_days }} days</span>
+                      {% else %}
+                        <span>-</span>
+                      {% endif %}
+                    </div>
+                    <div class="col-sm-6">
+                      <strong>Payment Status:</strong> {{ schedule.repayment_status|default:"-" }}
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-6">
+                      <strong>Balance Amount:</strong> ${{ schedule.remaining_balance|floatformat:2 }}
+                    </div>
+                    <div class="col-sm-6">
+                      <strong>Instalment Amount:</strong> ${{ schedule.instalment_amount|floatformat:2 }}
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-6">
+                      <strong>Interest Amount:</strong> ${{ schedule.interest_amount|floatformat:2 }}
+                    </div>
+                    <div class="col-sm-6">
+                      <strong>Penalty Amount:</strong> ${{ schedule.payable_penalty_amt|floatformat:2 }}
+                    </div>
+                  </div>
+
+                  <!-- Payable Amount in a Box Shadow, Left Aligned -->
+                  <div class="row" style="font-weight: bold; font-size: 1.2em; margin-top: 20px;">
+                    <div class="col-sm-12">
+                      <!-- Box with Shadow, Left Aligned -->
+                      <div class="border p-4" style="background-color: #f8f9fa; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 50%; margin: 0;">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="text-left">
+                            <strong>Payable Amount:</strong>
+                          </div>
+                          <div class="text-right">
+                            <span class="text-bold" style="font-size: 1.4em;">${{ payable_amount|floatformat:2 }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <br>
+
+                <!-- Payment Form -->
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="button-container">
+                        <button class="btn btn-success btn-sm" type="submit">Make Payment</button>
+                    </div>
+                </form>
+
+                {% if payment_success %}
+                  <div class="alert alert-success mt-3" role="alert">
+                    Payment has been successfully processed!
+                  </div>
+                {% endif %}
+                {% else %}
+                  <p>No schedule data available.</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main><!-- End #main -->
+{% endblock %}

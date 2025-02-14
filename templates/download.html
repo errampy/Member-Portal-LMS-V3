@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_block %}
+<h3>Downloads</h3>
+<div class="card px-2 py-2 pt-4">
+    <h5 class="">Downloads</h5>
+    <div class="table-responsive">
+    <table class="table text-nowrap align-middle mb-0">
+        <thead class="">
+            <tr class="border-2 border-bottom border-primary border-0">
+                <th scope="col">Document</th>
+                <th scope="col">View</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <tr>
+                <td>Company Policy</td>
+                <td>
+                    <button class="btn btn-info btn-sm text-white">View</button>
+                </td>
+                <td>
+                    <button class="btn btn-primary btn-sm">Edit</button>
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+            <tr>
+                <td>User Manual</td>
+                <td>
+                    <button class="btn btn-info btn-sm text-white">View</button>
+                </td>
+                <td>
+                    <button class="btn btn-primary btn-sm">Edit</button>
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table></div>
+</div>
+{% endblock %}

@@ -1,0 +1,1078 @@
+from django.shortcuts import render,redirect
+from .forms import *
+from .api_call import *
+from datetime import *
+from django.http import JsonResponse
+import json
+import logging
+from json import *
+# baseurl = 'http://127.0.0.1:9000/'
+
+# service_api_url = 'micro-service1/'
+url='http://127.0.0.1:9000/micro-service1/'
+# url='https://bblmsv2be.pythonanywhere.com/micro-service1/'
+
+import json
+from django.shortcuts import render
+
+import json
+
+import json
+from django.shortcuts import render
+
+def dashboard(request):
+    id_number = request.session.get('id_number')  
+    member = request.session.get('member')
+
+    # Ensure loanapp is in session
+    if 'loanapp' not in request.session or not request.session['loanapp']:
+        if member and 'code' in member:
+            code1 = member['code']
+            dict1 = {
+                "ms_id": "MS22012776",
+                "ms_payload": {"code": code1}
+            }
+            json_data = json.dumps(dict1)
+            response1 = call_post_method_without_token(url, json_data)
+            if response1.status_code == 200:
+                response_data = json.loads(response1.content)
+                loanapp = response_data[0] if response_data else None
+                request.session['loanapp'] = loanapp
+            else:
+                loanapp = None
+        else:
+            loanapp = None
+    else:
+        loanapp = request.session['loanapp']
+
+    # Your existing logic to process loanapp data
+    desired_data = {
+        "paid_count": 0,
+        "pending_count": 0,
+        "amount_paid": 0,
+        "amount_pending": 0,
+        "total_repayment": 0,
+    }
+    loan_amount = 0
+
+    if loanapp and 'application_id' in loanapp:
+        code1 = loanapp['application_id']
+        dict1 = {
+            "ms_id": "MS22019182",
+            "ms_payload": {"code": code1}
+        }
+        json_data = json.dumps(dict1)
+        try:
+            response1 = call_post_method_without_token(url, json_data)
+            data = json.loads(response1.content)
+            if "loan_amount" in data:
+                loan_amount = data["loan_amount"]
+            if "applications_with_repayment_counts" in data and data["applications_with_repayment_counts"]:
+                repayment_data = data["applications_with_repayment_counts"][0]
+                desired_data = {
+                    "loan_amount": loan_amount,
+                    "paid_count": repayment_data.get("paid_count", 0),
+                    "pending_count": repayment_data.get("pending_count", 0),
+                    "amount_paid": repayment_data.get("amount_paid", 0),
+                    "amount_pending": repayment_data.get("amount_pending", 0),
+                    "total_repayment": repayment_data.get("paid_count", 0) + repayment_data.get("pending_count", 0)
+                }
+        except Exception as e:
+            print(f"Error fetching loan data: {e}")
+
+    return render(request, 'dashboard.html', {
+        'id_number': id_number,
+        'member': member,
+        'desired_data': desired_data,
+        'loan_amount': loan_amount,
+    })
+
+def member_profile(request):
+    id_number = request.session.get('id_number')  # Retrieve id_number from session
+    member = request.session.get('member')
+    return render(request,'member_profile.html',{'member':member}) 
+     
+def image_filescreate(cleaned_data):
+    files = {}
+    fields_to_remove = []
+
+    # Identify and separate file fields
+    for field_name, value in cleaned_data.items():
+        if hasattr(value, 'read'):  # Check if it's a file-like object
+            files[field_name] = (value.name, value, value.content_type)
+            fields_to_remove.append(field_name)
+
+    # Remove file fields from cleaned_data
+    for field_name in fields_to_remove:
+        cleaned_data.pop(field_name)
+    # Return files and the modified cleaned_data
+    return files,cleaned_data
+
+from django.shortcuts import render, redirect
+import json
+
+def login(request):
+    form = LoginForm()
+    error_message = None  # Default error message
+
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            id_number = str(cleaned_data['id_number'])  
+            request.session['id_number'] = id_number  
+
+            dict1 = {
+                "ms_id": "MS6014365",
+                "ms_payload": {
+                    "code": str(cleaned_data['id_number']),
+                }
+            }
+            json_data = json.dumps(dict1)
+            response1 = call_post_method_without_token(url, json_data)
+            print('response1',response1)
+            print('response1 json',response1.json)
+            if response1.status_code == 200:
+                response=response1.content
+                print('response',response)
+                response_data = json.loads(response)
+                member = response_data[0].get('member')
+                print('member',member)
+                request.session['member'] = member
+                return redirect('verify')  
+            else:
+                error_message = "Either you are not a registered member or your under approval process"
+
+            # response=response1.content
+            # print('response',response)
+            # response_data = json.loads(response)
+            # member = response_data[0].get('member')
+            # print('member',member)
+            # request.session['member'] = member
+
+            # if response1.status_code == 200:
+            #     return redirect('verify')  
+            # else:
+            #     error_message = "No member found. Please check your member code and try again."
+
+    return render(request, 'login1.html', {'form': form, 'error_message': error_message})
+
+def register(request):
+    form=RegisterForm()
+    return render(request,'register.html',{'form':form}) 
+
+def verify(request):
+    return render(request,'verify.html') 
+
+def basic(request):
+    form=UserRegistrationForm()
+    
+    return render(request,'basic.html',{'form':form}) 
+
+
+def download(request):
+    return render(request,'download.html') 
+def loanapplication(request):
+    member = request.session.get('member')
+    if not member:
+        return render(request, 'loanapplication.html', {'loans': []})
+    
+    code1 = member.get('code')
+    print('code', code1)
+    
+    dict1 = {
+        "ms_id": "MS22012776",
+        "ms_payload": {
+            "code": code1,
+        }
+    }
+    json_data = json.dumps(dict1)
+    
+    response1 = call_post_method_without_token(url, json_data)
+    print('response1', response1)
+    
+    response = response1.content
+    print('response', response)
+    
+    response_data = json.loads(response)
+    
+    # Check if response contains data
+    loanapp = response_data[0] if response_data else None
+    print('loanapp', loanapp)
+    
+    request.session['loanapp'] = loanapp
+    
+    # Ensure that `loanapp` is wrapped in a list to loop through in the template
+    return render(request, 'loanapplication.html', {'loans': [loanapp] if loanapp else []})
+
+import json
+from django.shortcuts import render
+from .forms import LoanDisbursementForm  # Ensure this is imported
+
+def applyloan(request):
+    loan_types = []
+    loan_types_data = []
+    member = request.session.get('member')
+    code1 = member['code']
+    print('code', code1)
+
+    if request.method == 'POST':
+        form = LoanDisbursementForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            cleaned_data['member_id'] = code1
+            print("Form data:", cleaned_data)  # To check the submitted data
+            if cleaned_data['repayment_start_date'] is not None:           
+                cleaned_data['repayment_start_date'] = cleaned_data['repayment_start_date'].strftime('%Y-%m-%d')
+            print('data', cleaned_data['repayment_start_date'])
+            
+            if cleaned_data['applied_at'] is None:           
+                cleaned_data['applied_at'] = datetime.now().strftime('%Y-%m-%d')
+            if cleaned_data['approved_at'] is None:           
+                cleaned_data['approved_at'] = datetime.now().strftime('%Y-%m-%d')
+            if cleaned_data['checked_on'] is None:                
+                cleaned_data['checked_on'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if cleaned_data['document_verified_datetime'] is None:                
+                cleaned_data['document_verified_datetime'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # Simulating the API request for loan types
+            loan_dict = {
+                "ms_id": "MS23011466",
+                'ms_payload': cleaned_data         
+            }
+            print('loan_dict', loan_dict)
+            json_data = json.dumps(loan_dict)              
+
+            print('url', url)
+            response1 = call_post_method_without_token(url, json_data)
+
+            print('response1', response1)
+            return redirect('loanapplication')
+            
+        else:
+            print("Form errors:", form.errors)  # To check any form validation errors
+
+    else:
+        form = LoanDisbursementForm()
+        dict1 = {
+            "ms_id": "MS23014869",
+            "ms_payload": {}
+        }
+        json_data = json.dumps(dict1)
+        response1 = call_post_method_without_token(url, json_data)
+
+        if response1.status_code == 200:
+            response_data = json.loads(response1.content)
+            if response_data and response_data[0].get("obj"):
+                loan_types = [
+                    {
+                        "code": loan["code"],
+                        "loantype": loan["loantype"],
+                    }
+                    for loan in response_data[0]["obj"]
+                ]
+
+        dict2 = {
+            "ms_id": "MS7018031",
+            "ms_payload": {}
+        }
+        json_data = json.dumps(dict2)
+        response2 = call_post_method_without_token(url, json_data)
+
+        if response2.status_code == 200:
+            response_data = json.loads(response2.content)
+            if response_data and response_data[0].get("obj"):
+                loan_types_data = [
+                    {
+                        "code": loan["code"],
+                        "loantype": loan["loantype"],
+                        "description": loan["description"],
+                        "disbursement_beneficiary": loan["disbursement_beneficiary"],
+                        "interest_rate": loan["interest_rate"],
+                        "loan_calculation_method": loan["loan_calculation_method"],
+                        "min_loan_terms": loan["min_loan_terms"],
+                        "max_loan_terms": loan["max_loan_terms"],
+                        "min_loan_amt": loan["min_loan_amt"],
+                        "max_loan_amt": loan["max_loan_amt"],
+                        "processing_fee": loan["processing_fee"],
+                        "pre_payment_fee": loan["pre_payment_fee"],
+                        "post_payment_fee": loan["post_payment_fee"],
+                        "min_age": loan["min_age"],
+                        "max_age": loan["max_age"],
+                        "income": loan["income"],
+                        "collateral_required": loan["collateral_required"],
+                        "is_active": loan["is_active"],
+                        "is_refinance": loan["is_refinance"],
+                        "is_deactivate": loan["is_deactivate"],
+                        "loantype_id": loan["loantype_id"],
+                        "branch": loan["branch"]
+                    }
+                    for loan in response_data[0]["obj"]
+                ]
+
+    return render(request, 'applyloan1.html', {'form': form, 'loan_types': loan_types, 'loan_types_data': loan_types_data})
+
+
+def basic1(request):
+
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST,files = request.FILES)  # Bind form data
+        if form.is_valid():  # Validate the form
+            cleaned_data = form.cleaned_data
+            if cleaned_data['date_of_birth'] is not None:           
+                cleaned_data['date_of_birth'] = cleaned_data['date_of_birth'].strftime('%Y-%m-%d')
+            print(cleaned_data)
+            files, cleaned_data = image_filescreate(cleaned_data)
+
+            dict2 = {
+                "ms_id": "MS22012570",
+                "ms_payload": cleaned_data if files else cleaned_data
+                }
+
+            json_data = json.dumps(dict2)              
+  
+            print('url',url)
+            response1=call_post_method_without_token(url,json_data)
+
+            print('response1',response1)
+            return redirect('login')
+        else:
+            print(form.errors)  # Print errors if form is not valid
+    else:
+        form = UserRegistrationForm()  # Create an empty form if GET request
+        category_dict = {
+                "ms_id": "MS24017038",
+                "ms_payload": {'branch_id':'2'}
+            }
+        json_data = json.dumps(category_dict)
+        category = call_post_method_without_token(url, json_data)
+        # print('category',category.content)
+        if category.status_code == 200:
+            category_data = json.loads(category.content)
+            if category_data and category_data[0].get("obj"):
+                category_datas = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["description"],
+                    }
+                    for loan in category_data[0]["obj"]
+                ]   
+        print('category_data',category_datas)
+
+        category_type_dict = {
+                "ms_id": "MS24018714",
+                "ms_payload": {'branch_id':'2'}
+            }
+        json_data = json.dumps(category_type_dict)
+        category_type = call_post_method_without_token(url, json_data)
+        # print('category type',category_type.content)
+        if category_type.status_code == 200:
+            category_type_data = json.loads(category_type.content)
+            if category_type_data and category_type_data[0].get("obj"):
+                category_type_datas = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["description"],
+                    }
+                    for loan in category_type_data[0]["obj"]
+                ]   
+                print('category_type_data',category_type_datas)
+
+        category_dict = {
+                "ms_id": "MS24013767",
+                "ms_payload": {'branch_id':'2'}
+            }
+        json_data = json.dumps(category_dict)
+        member_category = call_post_method_without_token(url, json_data)
+        # print('member_category',member_category.content)
+        if member_category.status_code == 200:
+            member_category_data = json.loads(member_category.content)
+            if member_category_data and member_category_data[0].get("obj"):
+                member_category_data = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["description"],
+                    }
+                    for loan in member_category_data[0]["obj"]
+                ]   
+                print('member_category_data',member_category_data)
+
+        officer_dict = {
+                "ms_id": "MS24012868",
+                "ms_payload": {'branch_id':'2'}
+            }
+        json_data = json.dumps(officer_dict)
+        officer_dict = call_post_method_without_token(url, json_data)
+        if officer_dict.status_code == 200:
+            officer_data = json.loads(officer_dict.content)
+            if officer_data and officer_data[0].get("obj"):
+                officer_datas = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["first_name"],
+                    }
+                    for loan in officer_data[0]["obj"]
+                ]   
+                print('officer_data',officer_datas)
+        department_dict = {
+                "ms_id": "MS24015034",
+                "ms_payload": {'branch_id':'2'}
+            }
+        json_data = json.dumps(department_dict)
+        department_dict = call_post_method_without_token(url, json_data)
+        print('department_dict',department_dict)
+        if department_dict.status_code == 200:
+            department_data = json.loads(department_dict.content)
+            if department_data and department_data[0].get("obj"):
+                department_datas = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["description"],
+                    }
+                    for loan in department_data[0]["obj"]
+                ]   
+                print('department_data',department_datas)
+        title_dict = {
+                "ms_id": "MS24013886",
+                "ms_payload": {'branch_id':'2'}
+            }
+        json_data = json.dumps(title_dict)
+        title_data = call_post_method_without_token(url, json_data)
+        print('title_dict',title_data)
+        if title_data.status_code == 200:
+            title_data = json.loads(title_data.content)
+            if title_data and title_data[0].get("obj"):
+                title_datas = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["description"],
+                    }
+                    for loan in title_data[0]["obj"]
+                ]   
+                print('title_data',title_datas)
+
+    return render(request, 'basic1.html',{'form': form,'category_data':category_datas,'category_type_datas':category_type_datas,'title_data':title_datas,
+                  'member_category_data':member_category_data,'officer_data':officer_datas,'department_data':department_datas})
+
+import requests
+
+def call_external_api(ms_id, code, url):
+    payload = {
+        "ms_id": ms_id,
+        "ms_payload": {"code": code}
+    }
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return response.json()  # Return parsed JSON
+    except requests.exceptions.RequestException as e:
+        print(f"API Error: {e}")
+        return None
+
+def call_external_api1(ms_id, payload, url):
+    payload = {
+        "ms_id": ms_id,
+        "ms_payload": payload
+    }
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        return response.json()  # Return parsed JSON
+    except requests.exceptions.RequestException as e:
+        print(f"API Error: {e}")
+        return None
+# def repayment_Schedule(request):
+#     member = request.session.get('loanapp')
+#     if not member or 'application_id' not in member:
+#         return render(request, 'repayment.html', {'error_message': 'Loan application not submitted'})
+
+#     code1 = member['application_id']
+#     loan_status = member.get('application_status', 'repayment')  # Default to repayment
+
+#     print('Code:', code1)
+#     print('Loan Status:', loan_status)
+
+#     # Determine API call based on loan status
+#     ms_id = "MS27011625" if loan_status == "restructured" else "MS27015670"
+#     schedules = call_external_api(ms_id, code1, url)
+
+#     if not schedules:
+#         error_message = "Failed to load repayment schedule" if loan_status == "repayment" else "Failed to load restructure schedule"
+#         return render(request, 'repayment.html', {'error_message': error_message})
+
+#     return render(request, 'repayment.html', {'schedules': schedules})
+
+def repayment_Schedule(request):
+    member = request.session.get('loanapp')
+    if not member or 'application_id' not in member:
+        return render(request, 'repayment.html', {'error_message': 'Loan application not submitted'})
+
+    code1 = member['application_id']
+    loan_status = member.get('application_status', None)  # Fetch loan status, default is None
+
+    print('Code:', code1)
+    print('Loan Status:', loan_status)
+
+    # Determine ms_id based on loan status
+    if loan_status == "restructured":
+        ms_id = "MS27011625"
+    elif loan_status == "Cleared balance and moved for refinance":
+        ms_id = "MS27012404"
+    elif loan_status == "approved":
+        ms_id = "MS27015670"
+    else:
+        # Handle loans under disbursement or unknown statuses
+        return render(request, 'repayment.html', {'error_message': 'Application is under disbursement process. Please check back later.'})
+
+    schedules = call_external_api(ms_id, code1, url)
+
+    if not schedules:
+        error_message = f"Failed to load schedule for status: {loan_status}"
+        return render(request, 'repayment.html', {'error_message': error_message})
+
+    return render(request, 'repayment.html', {'schedules': schedules})
+
+import json
+from django.shortcuts import render, redirect
+from .forms import Loancalculator
+
+def loancalculator(request):
+    if request.method == 'POST':
+        form = Loancalculator(request.POST)
+        print('form',form.is_valid())
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            cleaned_data['repayment_start_date'] = cleaned_data['repayment_start_date'].strftime('%Y-%m-%d')
+
+            print('cleaned_data', cleaned_data)
+            dict1 = {
+                    "ms_id": "MS8017447",
+                    "ms_payload":  cleaned_data,
+                    
+                }
+            json_data = json.dumps(dict1)
+            
+            response1 = call_post_method_without_token(url, json_data)
+            print('response1', response1.content)
+            response2 = json.loads(response1.content.decode('utf-8'))  # This gives a list
+            print('response2:', response2)
+
+            # Ensure response2 is a list and has data
+            if isinstance(response2, list) and len(response2) > 0:
+                records = response2  # Assign the list directly
+            else:
+                records = []  # Default to an empty list
+
+            # Calculate total payments and interest
+            total_payments = sum(item.get('Installment', 0) for item in records)
+            total_interest = sum(item.get('Interest', 0) for item in records)
+
+
+            context = {'form': form, 'save': True, 'records': records, 'total_payments': total_payments, 'total_interest': total_interest}
+            return render(request, 'loancalculator.html', context)
+
+            return redirect('loancalculator')  # Change this to an appropriate view
+        else:
+            print(form.errors)
+    else:
+        form = Loancalculator()
+        dict1 = {
+            "ms_id": "MS23014869",
+            "ms_payload": {}
+        }
+        json_data = json.dumps(dict1)
+        response1 = call_post_method_without_token(url, json_data)
+
+        loan_types = []  # Initialize as empty list to avoid reference errors
+        if response1.status_code == 200:
+            response_data = json.loads(response1.content)
+            if response_data and response_data[0].get("obj"):
+                loan_types = [
+                    {
+                        "code": loan["code"],
+                        "loantype": loan["loantype"],
+                    }
+                    for loan in response_data[0]["obj"]
+                ]
+                print('loan_types', loan_types)
+        
+        return render(request, 'loancalculator.html', {'form': form, 'loan_types': loan_types})
+    
+    # Default return to prevent NoneType error
+    return render(request, 'loancalculator.html', {'form': form})
+
+def req(request):
+    return render(request,'requests.html') 
+
+def deposit(request):
+    return render(request,'deposit.html') 
+
+def account(request):
+    member = request.session.get('member')
+    code1 = member['code']
+    print('code', code1)
+    if request.method =='POST':
+        form=CustomerAccount(request.POST)
+        if form.is_valid():
+            cleaned_data=form.cleaned_data
+            cleaned_data['customer']=code1
+            print('cleaned_data',cleaned_data)
+            dict2 = {
+                "ms_id": "MS6013052",
+                "ms_payload": cleaned_data 
+                }
+
+            json_data = json.dumps(dict2)              
+  
+            print('url',url)
+            response1=call_post_method_without_token(url,json_data)
+
+            print('response1',response1)
+            return redirect('login')
+            
+    else:
+        form=CustomerAccount()
+    return render(request,'account.html',{'form':form}) 
+
+def accounttransfer(request):
+    return render(request,'accounttransfer.html') 
+
+def bank(request):
+    return render(request,'bank.html') 
+
+def edit_req(request):
+    return render(request,'edit_req.html') 
+
+def next_of_kinn(request):
+    title_datas = []  # Initialize the variable with an empty list to avoid UnboundLocalError
+    member = request.session.get('member')
+    code1 = member['code']
+
+    if request.method == 'POST':
+        form = NextOfKinn(request.POST, files=request.FILES)  # Bind form data
+        if form.is_valid():  # Validate the form
+            cleaned_data = form.cleaned_data
+            cleaned_data['member']=code1
+            if cleaned_data['date_of_birth'] is not None:
+                cleaned_data['date_of_birth'] = cleaned_data['date_of_birth'].strftime('%Y-%m-%d')
+            # print(cleaned_data)
+            # del cleaned_data['passport_image']
+            # del cleaned_data['identification_document']
+            print(cleaned_data)
+
+            # files, cleaned_data = image_filescreate(cleaned_data)
+            files=request.FILES
+            print('uploaded',request.FILES)
+            dict2 = {
+                "ms_id": "MS28013906",
+                "ms_payload": cleaned_data if files else cleaned_data
+            }
+
+            json_data = json.dumps(dict2)
+            print('url', url)
+            response1 = call_post_method_without_token(url, json_data)
+            # response1 = call_post_method_without_token_v2(url,data= dict2,files=files)
+
+            print('response1', response1)
+            print('response1', response1.json)
+            return redirect('login')
+        else:
+            print(form.errors)  # Print errors if form is not valid
+    else:
+        form = NextOfKinn()
+        title_dict = {
+            "ms_id": "MS28017677",
+            "ms_payload": {'branch_id': '2'}
+        }
+        json_data = json.dumps(title_dict)
+        title_data = call_post_method_without_token(url, json_data)
+        print('title_dict', title_data)
+        if title_data.status_code == 200:
+            title_data = json.loads(title_data.content)
+            if title_data and title_data[0].get("obj"):
+                title_datas = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["description"],
+                    }
+                    for loan in title_data[0]["obj"]
+                ]
+                print('title_data', title_datas)
+
+    return render(request, 'nextofkinn.html', {'form': form, 'title_data': title_datas})
+
+import json
+from django.shortcuts import render
+
+def next_of_kinn_list(request):
+    member = request.session.get('member')
+    if not member:
+        return render(request, 'nextofkinlist.html', {'loan_list': None})
+
+    code1 = member.get('code')
+    print('code', code1)
+
+    dict1 = {
+        "ms_id": "MS6019717",
+        "ms_payload": {
+            "code": code1,
+        }
+    }
+    json_data = json.dumps(dict1)
+
+    response1 = call_post_method_without_token(url, json_data)
+    print('response1', response1)
+
+    response = response1.content
+    print('response', response)
+
+    response_data = json.loads(response)
+
+    # Ensure response_data is a list
+    loan_list = response_data if isinstance(response_data, list) else [response_data]
+    print('loan_list', loan_list)
+
+    request.session['loan_list'] = loan_list
+    return render(request, 'nextofkinlist.html', {'loan_list': loan_list})
+def subscriptions(request):
+    title_datas = []  # Initialize the variable with an empty list to avoid UnboundLocalError
+    member = request.session.get('member')
+    code1 = member['code']
+
+    if request.method == 'POST':
+        form = Subscriptions(request.POST, files=request.FILES)  # Bind form data
+        if form.is_valid():  # Validate the form
+            cleaned_data = form.cleaned_data
+            cleaned_data['member']=code1
+            if cleaned_data['start_date'] is not None:
+                cleaned_data['start_date'] = cleaned_data['start_date'].strftime('%Y-%m-%d')
+            print(cleaned_data)
+
+            dict2 = {
+                "ms_id": "MS28018008",
+                "ms_payload": cleaned_data
+            }
+
+            json_data = json.dumps(dict2)
+            print('url', url)
+            response1 = call_post_method_without_token(url, json_data)
+
+            print('response1', response1.content)
+            return redirect('subscriptions')
+        else:
+            print(form.errors)  # Print errors if form is not valid
+    else:
+        form = Subscriptions()
+        title_dict = {
+            "ms_id": "MS28017677",
+            "ms_payload": {'branch_id': '2'}
+        }
+        json_data = json.dumps(title_dict)
+        title_data = call_post_method_without_token(url, json_data)
+        print('title_dict', title_data)
+        if title_data.status_code == 200:
+            title_data = json.loads(title_data.content)
+            if title_data and title_data[0].get("obj"):
+                title_datas = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["description"],
+                    }
+                    for loan in title_data[0]["obj"]
+                ]
+                print('title_data', title_datas)
+
+    return render(request, 'subscriptions.html', {'form': form, 'title_data': title_datas})
+import json
+from django.shortcuts import render
+
+def subscriptions_list(request):
+    member = request.session.get('member')
+    if not member:
+        return render(request, 'subscription_list.html', {'subscriptions': None})
+
+    code1 = member.get('code')
+    print('code', code1)
+
+    dict1 = {
+        "ms_id": "MS6019799",
+        "ms_payload": {
+            "code": code1,
+        }
+    }
+    json_data = json.dumps(dict1)
+
+    response1 = call_post_method_without_token(url, json_data)
+    print('response1', response1)
+
+    response = response1.content
+    print('response', response)
+
+    response_data = json.loads(response)
+
+    # Ensure response_data is a list
+    subscriptions = response_data if isinstance(response_data, list) else [response_data]
+    print('subscriptions', subscriptions)
+
+    request.session['subscriptions'] = subscriptions
+    return render(request, 'subscription_list.html', {'subscriptions': subscriptions})
+
+def nominees(request):
+    title_datas = []  # Initialize the variable with an empty list to avoid UnboundLocalError
+    member = request.session.get('member')
+    code1 = member['code']
+
+    if request.method == 'POST':
+        form = Nominee(request.POST, files=request.FILES)  # Bind form data
+        if form.is_valid():  # Validate the form
+            cleaned_data = form.cleaned_data
+            cleaned_data['member']=code1
+            if cleaned_data['date_of_birth'] is not None:
+                cleaned_data['date_of_birth'] = cleaned_data['date_of_birth'].strftime('%Y-%m-%d')
+            print(cleaned_data)
+            
+            files, cleaned_data = image_filescreate(cleaned_data, request.FILES.get('passport_image'))
+            print("Uploaded Files:", request.FILES)
+
+            dict2 = {
+                "ms_id": "MS28011689",
+                "ms_payload": cleaned_data if files else cleaned_data
+            }
+
+            json_data = json.dumps(dict2)
+            print('url', url)
+            response1 = call_post_method_without_token(url, json_data)
+
+            print('response1', response1)
+            return redirect('login')
+        else:
+            print(form.errors)  # Print errors if form is not valid
+    else:
+        form = Nominee()
+        title_dict = {
+            "ms_id": "MS28017677",
+            "ms_payload": {'branch_id': '2'}
+        }
+        json_data = json.dumps(title_dict)
+        title_data = call_post_method_without_token(url, json_data)
+        print('title_dict', title_data)
+        if title_data.status_code == 200:
+            title_data = json.loads(title_data.content)
+            if title_data and title_data[0].get("obj"):
+                title_datas = [
+                    {
+                        "code": loan["code"],
+                        "category": loan["description"],
+                    }
+                    for loan in title_data[0]["obj"]
+                ]
+                print('title_data', title_datas)
+
+    return render(request, 'nominee.html', {'form': form, 'title_data': title_datas})
+
+import json
+from django.shortcuts import render
+
+def nominees_list(request):
+    member = request.session.get('member')
+    if not member:
+        return render(request, 'nominee_list.html', {'nominees': None})
+
+    code1 = member.get('code')
+    print('code', code1)
+
+    dict1 = {
+        "ms_id": "MS7016574",
+        "ms_payload": {
+            "code": code1,
+        }
+    }
+    json_data = json.dumps(dict1)
+
+    response1 = call_post_method_without_token(url, json_data)
+    print('response1', response1)
+
+    response = response1.content
+    print('response', response)
+
+    response_data = json.loads(response)
+
+    # Ensure response_data is a list
+    nominees = response_data if isinstance(response_data, list) else [response_data]
+    print('nominees', nominees)
+
+    request.session['nominees'] = nominees
+    return render(request, 'nominee_list.html', {'nominees': nominees})
+
+def get_tenure_details(request, loantype_id):
+    print('code', loantype_id)
+    
+    dict1 = {
+        "ms_id": "MS7018031",
+        "ms_payload": {
+            "loantype_id": loantype_id,
+        }
+    }
+    json_data = json.dumps(dict1)
+    
+    response1 = call_post_method_without_token(url, json_data)
+    print('response1', response1)
+    
+    response = response1.content
+    print('response', response)
+    
+    data = json.loads(response)
+    
+    # Check if data is a list and process the first element
+    if isinstance(data, list) and len(data) > 0:
+        loan_details = data[0]  # Extract the first element
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid response data'}, status=400)
+
+    return JsonResponse({
+        'status': 'success',
+        'interest_rate': loan_details.get('interest_rate'),
+        'loan_calculation_method': loan_details.get('loan_calculation_method'),
+        'min_loan_terms': loan_details.get('min_loan_terms'),
+        'max_loan_terms': loan_details.get('max_loan_terms'),
+        'min_loan_amt': loan_details.get('min_loan_amt'),
+        'max_loan_amt': loan_details.get('max_loan_amt'),
+    })
+import json
+from django.shortcuts import render
+
+def account_list(request):
+    member = request.session.get('member')
+    if not member:
+        return render(request, 'accountlist.html', {'accounts': None})
+
+    code1 = member.get('code')
+    print('code', code1)
+
+    dict1 = {
+        "ms_id": "MS6012950",
+        "ms_payload": {
+            "code": code1,
+        }
+    }
+    json_data = json.dumps(dict1)
+
+    response1 = call_post_method_without_token(url, json_data)
+    print('response1', response1)
+
+    response = response1.content
+    print('response', response)
+
+    response_data = json.loads(response)
+
+    # Ensure response_data is a list
+    accounts = response_data if isinstance(response_data, list) else [response_data]
+    print('accounts', accounts)
+
+    request.session['accounts'] = accounts
+    return render(request, 'accountlist.html', {'accounts': accounts})
+import json
+from datetime import datetime
+
+def payment_process(request, schedule_id, loan_application_id):
+    print(f"Schedule ID: {schedule_id}, Loan Application ID: {loan_application_id}")
+
+    member = request.session.get('loanapp')
+    if not member or 'application_id' not in member:
+        return render(request, 'repayment.html', {'error_message': 'Loan application not submitted'})
+
+    code1 = member['application_id']
+    loan_status = member.get('application_status', None)
+
+    print('Code:', code1)
+    print('Loan Status:', loan_status)
+
+    # Define mapping for loan statuses to ms_id and payload
+    loan_status_map = {
+        "restructured": {
+            "ms_id": "MS8018159",
+            "payload": {"schedule_id": schedule_id, "app_id": loan_application_id}
+        },
+        "Cleared balance and moved for refinance": {
+            "ms_id": "MS8017919",
+            "payload": {"code": code1, "loan_application_id": loan_application_id}
+        },
+        "approved": {
+            "ms_id": "MS8012265",
+            "payload": {"schedule_id": schedule_id, "app_id": loan_application_id}
+        },
+    }
+
+    if loan_status not in loan_status_map:
+        return render(request, 'payment_process.html', {'error_message': 'Application is under disbursement process. Please check back later.'})
+
+    ms_id = loan_status_map[loan_status]["ms_id"]
+    payload = loan_status_map[loan_status]["payload"]
+
+    schedules = call_external_api1(ms_id, payload, url)
+
+    if not schedules:
+        return render(request, 'payment_process.html', {'error_message': f"Failed to load schedule for status: {loan_status}"})
+
+    # Extract the first schedule from the response
+    schedule_data = schedules[0]
+
+    # Debugging: Print values
+    print('Repayment Date:', schedule_data['repayment_date'])
+    print('Paid Amount:', schedule_data['paid_amount'])
+    print('Instalment Amount:', schedule_data['instalment_amount'])
+
+    # Calculate the penalty and overdue days
+    payable_amount, overdue_days = calculate_penalty(schedule_data['repayment_date'], schedule_data['paid_amount'], schedule_data['instalment_amount'])
+
+    # Add the penalty amount and overdue days to the schedule data
+    schedule_data['payable_penalty_amt'] = payable_amount
+    schedule_data['overdue_days'] = overdue_days  # Pass overdue_days
+
+    payable_amount = round(payable_amount, 2)
+    print('payable_amount:', payable_amount)
+
+    # Add the interest amount (if any) to the payable amount
+    interest_amount = schedule_data['interest_amount'] if schedule_data['interest_amount'] else 0
+    schedule_data['payable_amount'] = payable_amount + schedule_data['instalment_amount'] + interest_amount
+    total = round(schedule_data['payable_amount'], 2)
+    print('Total payable amount:', total)
+
+    if request.method == 'POST':
+        print('loan_status',loan_status)
+        if loan_status == "restructured":
+            ms_id = "MS8019301"
+            payload = {"schedule_id": schedule_id, "app_id": loan_application_id}
+        elif loan_status == "Cleared balance and moved for refinance":
+            ms_id = "MS8012440"
+            payload = {"code": code1, "loan_application_id": loan_application_id}
+        elif loan_status == "approved":
+            ms_id = "MS8016276"
+            payload = {'schedule_id': schedule_id, 'app_id': loan_application_id, 'paid_amount': total, 'penalty': payable_amount}
+        else:
+            return render(request, 'payment_process.html', {'error_message': 'Application is under disbursement process. Please check back later.'})
+
+        # Call the external API for payment processing
+        print('ms_id, payload, url',ms_id, payload, url)
+        schedules = call_external_api1(ms_id, payload, url)
+        return redirect('repayment_Schedule')
+            # Optionally, set a success flag for the templat
+
+    return render(request, 'payment_process.html', {
+        'schedule': schedule_data,
+        'payable_amount': total
+    })
+
+def calculate_penalty(repayment_date, paid_amount, instalment_amount, penalty_rate=0.05):
+    """
+    Calculates the penalty if the repayment date is overdue.
+    penalty_rate is set to 5% by default.
+    """
+    current_date = datetime.now().date()
+    repayment_date = datetime.strptime(repayment_date, "%Y-%m-%d").date()
+
+    if current_date > repayment_date and paid_amount == 0.0:
+        overdue_days = (current_date - repayment_date).days
+        penalty_amount = instalment_amount * penalty_rate * overdue_days
+        return round(penalty_amount, 2), overdue_days
+    return 0.0, 0

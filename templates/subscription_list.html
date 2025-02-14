@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_block %}
+<h3>Subscription List</h3>
+<div class="card px-2 py-2 mt-5">
+  <div class="col-md-2 mb-2">
+    <a href="{% url 'subscriptions' %}" class="btn btn-primary text-decoration-none text-white me-2">
+        New 
+    </a>
+  </div>
+
+  {% if subscriptions %}
+  <div class="table-responsive">
+    <table class="table table-bordered text-nowrap align-middle mb-0">
+      <thead>
+        <tr class="table-primary">
+          <th>S.No</th>
+          <th>Start Date</th>
+          <th>Amount</th>
+          <th>Minimum Contribution</th>
+          <th>Is Deactivated</th>
+          <th>Branch</th>
+          <th>Member</th>
+          <th>Account Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for loan in subscriptions %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ loan.start_date|default:"-" }}</td>
+          <td>{{ loan.amount|default:"-" }}</td>
+          <td>{{ loan.minimum_contribution|default:"-" }}</td>
+          <td>{{ loan.is_deactivate|yesno:"Yes,No"|default:"-" }}</td>
+          <td>{{ loan.branch|default:"-" }}</td>
+          <td>{{ loan.member|default:"-" }}</td>
+          <td>{{ loan.account_type|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-warning mt-3" role="alert">
+      No subscription data available.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

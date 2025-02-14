@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_block %}
+
+<div class="container mt-5">
+    <div class="card px-4 py-4 shadow-lg">
+        <h3 class="text-center mb-4">Nominee Form</h3>
+        <form id="nomineeForm" method="POST" enctype="multipart/form-data" action="{% url 'nominees' %}">
+            {% csrf_token %}
+
+            <!-- Relative Code Selection -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="relative_code" class="form-label">Relative Code</label>
+                    <select id="relative_code" name="relative_code" class="form-control form-control-lg">
+                        <option value="" disabled selected>Select Relative Code</option>
+                        {% for title in title_data %}
+                            <option value="{{ title.code }}">{{ title.category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- Identification Details -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="identification_type" class="form-label">Identification Type</label>
+                    <select id="identification_type" name="identification_type" class="form-control form-control-lg" required>
+                        <option value="National ID/Alien ID">National ID/Alien ID</option>
+                        <option value="Passport">Passport</option>
+                        <option value="Birth Certificate">Birth Certificate</option>
+                        <option value="Birth Notification">Birth Notification</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="identification_no" class="form-label">Identification Number</label>
+                    <input type="number" id="identification_no" name="identification_no" class="form-control form-control-lg" required>
+                </div>
+            </div>
+
+            <!-- Personal Information -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" id="name" name="name" class="form-control form-control-lg" maxlength="50" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                    <input type="date" id="date_of_birth" name="date_of_birth" class="form-control form-control-lg">
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="phone_no" class="form-label">Phone Number</label>
+                    <input type="number" id="phone_no" name="phone_no" class="form-control form-control-lg">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="passport_image" class="form-label">Passport Image</label>
+                    <input type="file" id="passport_image" name="passport_image" class="form-control form-control-lg">
+                </div>
+            </div>
+
+            <!-- Document Upload -->
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="identification_document" class="form-label">Identification Document</label>
+                    <input type="file" id="identification_document" name="identification_document" class="form-control form-control-lg">
+                </div>
+            </div>
+
+            <!-- Submit button -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-success btn-lg px-5">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

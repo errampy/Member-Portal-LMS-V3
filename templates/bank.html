@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block body_block %}
+<div class="col-md-3">
+   <!-- Card -->
+<div class="card bg-primary text-white" data-bs-toggle="modal" data-bs-target="#exampleModal" style="cursor: pointer;">
+    <div class="card-body text-center">
+      <div class="rounded-circle d-flex justify-content-center align-items-center mx-auto" 
+           style="width: 50px; height: 50px; background-color: #f8f9fa;">
+           <i class="bi bi-arrow-left-right text-primary"></i>
+      </div>
+      <h5 class="mt-3">Bank Transfer</h5>
+      <h6>Bank transfers</h6>
+    </div>
+  </div>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Bank Transfers</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Form -->
+          <form id="paymentForm">
+            <!-- Account -->
+            <div class="mb-3">
+              <label for="accountSelect" class="form-label">Select Account</label>
+              <select class="form-select" id="accountSelect" required>
+                <option value="" selected disabled>Choose an account</option>
+                <option value="savings">Savings Account</option>
+                <option value="current">Current Account</option>
+                <option value="business">Business Account</option>
+              </select>
+            </div>
+          
+            <!-- Payment Type -->
+            <div class="mb-3">
+              <label for="paymentType" class="form-label">Payment Type</label>
+              <select class="form-select" id="paymentType" required>
+                <option value="" selected disabled>Select payment type</option>
+                <option value="cash">Cash</option>
+                <option value="cheque">Cheque</option>
+                <option value="online">Online Transfer</option>
+              </select>
+            </div>
+          
+            <!-- Bank -->
+            <div class="mb-3">
+              <label for="bankSelect" class="form-label">Bank</label>
+              <select class="form-select" id="bankSelect" required>
+                <option value="" selected disabled>Select bank</option>
+                <option value="bank1">Bank 1</option>
+                <option value="bank2">Bank 2</option>
+                <option value="bank3">Bank 3</option>
+              </select>
+            </div>
+          
+            <!-- Branch -->
+            <div class="mb-3">
+              <label for="branchSelect" class="form-label">Branch</label>
+              <select class="form-select" id="branchSelect" required>
+                <option value="" selected disabled>Select branch</option>
+                <option value="branch1">Branch 1</option>
+                <option value="branch2">Branch 2</option>
+                <option value="branch3">Branch 3</option>
+              </select>
+            </div>
+          
+            <!-- Account Number -->
+            <div class="mb-3">
+              <label for="accountNumber" class="form-label">Account Number</label>
+              <input type="text" class="form-control" id="accountNumber" placeholder="Enter account number" required>
+            </div>
+          
+            <!-- Account Name -->
+            <div class="mb-3">
+              <label for="accountName" class="form-label">Account Name</label>
+              <input type="text" class="form-control" id="accountName" placeholder="Enter account name" required>
+            </div>
+          
+            <!-- Buttons -->
+            <div class="d-flex justify-content-end">
+              <button type="button" class="btn btn-dark me-2" id="cancelButton">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+            </div>
+          </form>
+          
+        </div>
+      
+    </div>
+  </div>
+  
+  </div>
+  
+{% endblock %}
