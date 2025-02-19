@@ -42,7 +42,7 @@
           <td>{{ loan.interest_rate|default:"-" }}</td>
           <td>{{ loan.tenure|default:"-" }}</td>
           <td>{{ loan.disbursement_type|default:"-" }}</td>
-          <td> <a href="{% url '' %}" class="btn btn-secondary text-decoration-none text-white me-2">
+          <td> <a href="{% url 'loan-restructure'  loan.member_id loan.code loan.loantype %}" class="btn btn-secondary text-decoration-none text-white me-2">
              Restructure 
         </a>
         <a href="{% url 'loan-refinance' loan.member_id loan.code loan.loantype%}" class="btn btn-success text-decoration-none text-white">

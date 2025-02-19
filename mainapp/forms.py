@@ -472,3 +472,12 @@ class RefinanceForm(forms.Form):
     )
 	repayment_id= forms.DateField( required=False,label='repayment date', widget=forms.DateInput(attrs={"class": "form-control", "type": "date"}))
 
+
+class RestructureForm(forms.Form):
+
+	tenure=forms.IntegerField(
+        required=True,
+        label='Tenure',
+        widget=forms.NumberInput(attrs={"class": "form-control","readony":"readonly"})
+    )
+	repayment_id= forms.DateField( required=False,label='repayment date', widget=forms.DateInput(attrs={"class": "form-control", "type": "date"}))
