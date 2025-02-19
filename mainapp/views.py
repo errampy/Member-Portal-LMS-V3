@@ -1304,7 +1304,7 @@ def loan_refinance(request, member, loanapp, loan):
     print('loan_status',loan_status)
 
     form = RefinanceForm()
-    if loan_status == 'restructured':
+    if loan_status == 'Restructured':
         dict1 = {
             "ms_id": "MS5026036",
             "ms_payload": {
@@ -1542,3 +1542,189 @@ def loan_restructure(request,member,loanapp,loan):
 
     }
     return render(request,'restructure.html',context)
+
+
+
+def loan_closure(request,member,loanapp,loan):
+    print('member', member)
+    print('loanapp', loanapp)
+    print('loan', loan)
+
+    dict1 = {
+        "ms_id": "MS18021330", #view loanapplication single member
+        "ms_payload": {
+            "code": loanapp,
+        }
+    }
+
+    json_data = json.dumps(dict1)
+    response1 = call_post_method_without_token(url, json_data)
+    loan_datas = json.loads(response1.content)
+    loan_amount = loan_datas[0]["approved_amount"]
+    loan_status = loan_datas[0]["loan_status"]
+    loan_id = loan_datas[0]["code"]
+
+    dict1 = {
+        "ms_id": "MS18029529",  #view loan single member
+        "ms_payload": {
+            "code": member,
+        }
+    }
+    json_data = json.dumps(dict1)
+    response1 = call_post_method_without_token(url, json_data)
+    loan_data = json.loads(response1.content)
+    loantype = loan_data[0]["loantype"]
+    tenure_type = loan_data[0]["tenure_type"]
+    tenure = loan_data[0]["tenure"]
+    disbursement_type = loan_data[0]["disbursement_type"]
+    repayment_schedule = loan_data[0]["repayment_schedule"]
+    application_id = loan_data[0]["application_id"]
+
+    dict1 = {
+        "ms_id": "MS19029134",  #view loantype single member
+        "ms_payload": {
+            "code": loantype,
+        }
+    }
+    json_data = json.dumps(dict1)
+    response1 = call_post_method_without_token(url, json_data)
+    loantype_data = json.loads(response1.content)
+    min_terms = loantype_data[0]["min_loan_terms"]
+    max_terms = loantype_data[0]["max_loan_terms"]
+    max_loan_amt = loantype_data[0]["max_loan_amt"]
+    min_loan_amt = loantype_data[0]["min_loan_amt"]
+    loan_calculation_method = loantype_data[0]["loan_calculation_method"]
+    interest_rate = loantype_data[0]["interest_rate"]
+    is_refinance = loantype_data[0]["is_refinance"]
+
+    if loan_status=='Active_Loan':
+        dict1 = {
+            "ms_id": "MS18024804", #getting repayment schedules
+            "ms_payload": {
+                "loanapp_id": loanapp,
+                "branch_id": 1,
+            }
+        }
+        json_data = json.dumps(dict1)
+        response1 = call_post_method_without_token(url, json_data)
+        schedules = json.loads(response1.content)
+        
+        total_schedule=len(schedules)
+        dict1 = {
+            "ms_id": "MS18021401", #getting next schedules
+            "ms_payload": {
+                "loanapp_id": loanapp,
+                "branch_id": 1,
+            }
+        }
+        json_data = json.dumps(dict1)
+        response1 = call_post_method_without_token(url, json_data)
+        next_schedule = json.loads(response1.content)
+        print('next schedules',next_schedule)
+        paid_installment=next_schedule[0]['total']
+        pending_installment=total_schedule-paid_installment
+        total_installment_amount = sum(item['instalment_amount'] for item in schedules)
+        total_paid_amount = sum(item['paid_amount'] for item in schedules)
+        total_due=sum(item['instalment_amount'] for item in schedules) -sum(item['paid_amount'] for item in schedules)
+        total_interest=sum(item['interest_amount'] for item in schedules) 
+        total_penalty=sum(item['payable_penalty_amt'] for item in schedules) 
+        print('total_due',total_due)
+        print('total_interest',total_interest)
+        print('total_penalty',total_penalty)
+        loan_close=total_due+total_interest+total_penalty
+        member = request.session.get('loanapp')
+        if not member or 'application_id' not in member:
+            return render(request, 'repayment.html', {'error_message': 'Loan application not submitted'})
+    elif loan_status=='Restructured':
+        dict1 = {
+            "ms_id": "MS18024416", #getting repayment restructure schedules
+            "ms_payload": {
+                "loanapp_id": loanapp,
+                "branch_id": 1,
+            }
+        }
+        json_data = json.dumps(dict1)
+        response1 = call_post_method_without_token(url, json_data)
+        schedules = json.loads(response1.content)
+        print('schedules',schedules)
+        total_schedule=len(schedules)
+        dict1 = {
+            "ms_id": "MS18022741", #getting next restructure schedules member
+            "ms_payload": {
+                "loanapp_id": loanapp,
+                "branch_id": 1,
+            }
+        }
+        json_data = json.dumps(dict1)
+        response1 = call_post_method_without_token(url, json_data)
+        next_schedule = json.loads(response1.content)
+        print('next schedules',next_schedule)
+        paid_installment=next_schedule[0]['total']
+        pending_installment=total_schedule-paid_installment
+        total_installment_amount = sum(item['instalment_amount'] for item in schedules)
+        total_paid_amount = sum(item['paid_amount'] for item in schedules)
+        total_due=sum(item['instalment_amount'] for item in schedules) -sum(item['paid_amount'] for item in schedules)
+        total_interest=sum(item['interest_amount'] for item in schedules) 
+        total_penalty=sum(item['payable_penalty_amt'] for item in schedules) 
+        print('total_due',total_due)
+        print('total_interest',total_interest)
+        print('total_penalty',total_penalty)
+        loan_close=total_due+total_interest+total_penalty
+        print('loan_close',loan_close)
+        member = request.session.get('loanapp')
+        if not member or 'application_id' not in member:
+            return render(request, 'repayment.html', {'error_message': 'Loan application not submitted'})
+
+    code1 = member['application_id']
+    loan_status = member.get('application_status', None)  # Fetch loan status, default is None
+
+    print('Code:', code1)
+    print('Loan Status:', loan_status)
+
+    # Determine ms_id based on loan status
+    if loan_status == "Restructured": #view restructureschedule single member
+        ms_id = "MS18025544"
+    elif loan_status == "Cleared balance and moved for refinance":
+        ms_id = "MS5025769"
+    elif loan_status == "Approved":
+        ms_id = "MS18026046"  #view repaymentschedule single member
+    else:
+        # Handle loans under disbursement or unknown statuses
+        return render(request, 'loan_closure.html', {'error_message': 'Application is under disbursement process. Please check back later.'})
+
+    schedules = call_external_api(ms_id, code1, url)
+
+    if not schedules:
+        error_message = f"Failed to load schedule for status: {loan_status}"
+        return render(request, 'repayment.html', {'error_message': error_message})
+    if request.method=='POST':
+        dict1 = {
+            "ms_id": "MS19029965", #loan closure
+            "ms_payload": {
+                "member": member,
+                'app_id':loanapp,
+                "branch_id": 1,
+                "penalty":total_penalty,
+                "interest":total_interest,
+                "principal":total_installment_amount,
+                "total":loan_close,
+                # "processing_fee":processing_fee
+            }
+        }
+        json_data = json.dumps(dict1)
+        response1 = call_post_method_without_token(url, json_data)
+        next_schedule = json.loads(response1.content)
+        return redirect('loanapplication')
+    context = {
+         'member': member, 'tenure_type': tenure_type, 'tenure': tenure,
+        'disbursement_type': disbursement_type, 'repayment_schedule': repayment_schedule,
+        'application_id': application_id, 'min_terms': min_terms, 'max_terms': max_terms,
+        'max_loan_amt': max_loan_amt, 'min_loan_amt': min_loan_amt,
+        'loan_calculation_method': loan_calculation_method, 'interest_rate': interest_rate,
+        'loantype': loantype, 'loan_amount': loan_amount,'paid_amount':total_installment_amount,
+        'paid_installment':paid_installment,
+                    'pending_installment':pending_installment,
+        'total_due': total_due,  'loan_amount': loan_amount,'schedules': schedules,'loan_close':loan_close
+
+    }
+    return render(request, 'loan_closure.html', context)

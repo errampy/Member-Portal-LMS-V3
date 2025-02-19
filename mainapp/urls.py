@@ -24,6 +24,7 @@ urlpatterns = [
     path("loan_statement/",loan_statement, name="loan-statement"),
     path("loan_refinance/<str:member>/<str:loanapp>/<str:loan>/",loan_refinance, name="loan-refinance"),
     path("loan_restructure/<str:member>/<str:loanapp>/<str:loan>/",loan_restructure, name="loan-restructure"),
+    path("loan_closure/<str:member>/<str:loanapp>/<str:loan>/",loan_closure, name="loan-closure"),
     path("loanapplication/",loanapplication, name="loanapplication"),
     path("loan-calculator/",loancalculator, name="loancalculator"),
     path("applyloan/",applyloan, name="applyloan"),

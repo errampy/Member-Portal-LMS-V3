@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body_block %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Closure</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #e6f7ff;
+        }
+        .status-pending {
+            color: orange;
+            font-weight: bold;
+        }
+        .status-confirmed {
+            color: green;
+            font-weight: bold;
+        }
+
+        /* Message Box with Centering and Shadow */
+        .message-box {
+            width: 100%;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 768px) {
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Loan Closure</h1>
+
+    {% if schedules %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Period</th>
+                    <th scope="col">Schedule ID</th>
+                    <th scope="col">Repayment Date</th>
+                    <th scope="col">Instalment Amount</th>
+                    <th scope="col">Paid Amount</th>
+                    <th scope="col">Principal Amount</th>
+                    <th scope="col">Interest Amount</th>
+                    <th scope="col">Remaining Balance</th>
+                    <th scope="col">Repayment Status</th>
+                    <th scope="col">Payable Penalty</th>
+                    <th scope="col">Penalty Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for schedule in schedules %}
+                <tr>
+                    <td>{{ schedule.period|default:"-" }}</td>
+                    <td>{{ schedule.schedule_id|default:"-" }}</td>
+                    <td>{{ schedule.repayment_date|default:"-" }}</td>
+                    <td>{{ schedule.instalment_amount|default:"-" }}</td>
+                    <td>{{ schedule.paid_amount|default:"-" }}</td>
+                    <td>{{ schedule.principal_amount|default:"-" }}</td>
+                    <td>{{ schedule.interest_amount|default:"-" }}</td>
+                    <td>{{ schedule.remaining_balance|default:"-" }}</td>
+                    <td class="{% if schedule.repayment_status == 'Pending' %}status-pending{% else %}status-confirmed{% endif %}">
+                        {{ schedule.repayment_status|default:"-" }}
+                    </td>
+                    <td>{{ schedule.payable_penalty_amt|default:"-" }}</td>
+                    <td>{{ schedule.penalty_reason|default:"-" }}</td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="form-container">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="loanapp_id" value="{{ application_id }}">
+                <div class="form-group">
+                    <label for="loanClose">Loan Closure Amount:</label>
+                    <input type="text" id="loanClose" name="loan_close" value="{{ loan_close|floatformat:2 }}" class="form-control" readonly>
+                </div>
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to make this payment?');">
+                    Make Payment
+                </button>
+            </form>
+        </div>
+            </div>
+    {% else %}
+    <div class="message-box">
+        Application is currently under the disbursement process. Please check back later.
+    </div>
+    {% endif %}
+</body>
+</html>
+{% endblock %}

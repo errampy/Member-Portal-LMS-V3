@@ -47,7 +47,11 @@
         </a>
         <a href="{% url 'loan-refinance' loan.member_id loan.code loan.loantype%}" class="btn btn-success text-decoration-none text-white">
            Refinance 
-        </a></td>
+        </a>
+        <a href="{% url 'loan-closure' loan.member_id loan.code loan.loantype%}" class="btn btn-success text-decoration-none text-white">
+          Loan Closure 
+       </a>
+      </td>
         </tr>
         {% endfor %}
       </tbody>
