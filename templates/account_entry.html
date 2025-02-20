@@ -99,7 +99,7 @@
                                 <td>{{ record.entry_id }}</td>
                                 <td>{{ record.transaction_id }}</td>
                                 <td class="{% if record.debit_credit_marker == 'Debit' %}debit{% elif record.debit_credit_marker == 'Credit' %}credit{% endif %}">
-                                    {{ record.amount }}
+                                    {{ record.amount|floatformat:2 }}
                                 </td>
                                 <td class="{% if record.debit_credit_marker == 'Debit' %}debit{% elif record.debit_credit_marker == 'Credit' %}credit{% endif %}">
                                     {{ record.debit_credit_marker }}

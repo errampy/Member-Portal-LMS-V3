@@ -23,7 +23,7 @@ def tag_replacement(template: str, values: list[dict]) -> str:
     return template
 
 
-def validate_refinance_form( max_loan,min_loan,loan_amount,tenure,repayment_id, max_tenure,min_tenure, total_due, loan_status, is_refinance):
+def validate_refinance_form( eligibile,loan_amount,tenure,repayment_id, max_tenure,min_tenure, total_due, loan_status, is_refinance):
     """
     Validate the refinance form data submitted by the user.
 
@@ -46,12 +46,12 @@ def validate_refinance_form( max_loan,min_loan,loan_amount,tenure,repayment_id, 
         return [False, "This loan is not eligible for refinancing."]
 
     # Check loan status (already refinanced)
-    elif loan_status == "refinanced":
+    elif loan_status == "Refinanced":
         return [False, "This loan has already been refinanced."]
 
     # Validate loan amount
-    elif loan_amount >= max_loan:
-        return[ False, f"Loan amount cannot be more than {max_loan}."]
+    elif loan_amount >= eligibile:
+        return[ False, f"Loan amount cannot be more than {eligibile}."]
     
     elif loan_amount <= total_due:
         return [False, f"Loan amount cannot be less than {total_due}."]
@@ -70,6 +70,6 @@ def validate_restructure_form(tenure,max_tenure,min_tenure,loan_status):
     print('loan_status',loan_status)
     if min_tenure > tenure < max_tenure:
         return [False, f"Tenure must be between{min_tenure} and {max_tenure} months."]
-    elif loan_status == 'restructured':
+    elif loan_status == 'Restructured':
         return [False, "This loan has already been restructured."]
     return [True, f"Form data is valid."]

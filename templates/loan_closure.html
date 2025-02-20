@@ -126,14 +126,49 @@
         <div class="form-container">
             <form method="POST">
                 {% csrf_token %}
-                <input type="hidden" name="loanapp_id" value="{{ application_id }}">
+                {% comment %} <input type="hidden" name="loanapp_id" value="{{ application_id }}">
                 <div class="form-group">
                     <label for="loanClose">Loan Closure Amount:</label>
                     <input type="text" id="loanClose" name="loan_close" value="{{ loan_close|floatformat:2 }}" class="form-control" readonly>
+                </div> {% endcomment %}
+
+
+<div class="container mt-5">
+        <div class="card px-4 py-4 shadow-sm">
+            <div class="row mb-3">
+                <div class="col-md-2">
+                    <label for="total_due" class="form-label">Total Due</label>
+                    <input type="number" id="total_due" name="total_due" class="form-control shadow-sm" value="{{ total_due|floatformat:2 }}" readonly>
                 </div>
-                <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to make this payment?');">
-                    Make Payment
-                </button>
+
+                <div class="col-md-2">
+                    <label for="total_interest" class="form-label">Total Interest</label>
+                    <input type="number" id="total_interest" name="total_interest" class="form-control shadow-sm" value="{{ total_interest|floatformat:2 }}" readonly>
+                </div>
+            
+                <div class="col-md-2">
+                    <label for="total_penalty" class="form-label">Total Penalty</label>
+                    <input type="number" id="total_penalty" name="total_penalty" class="form-control shadow-sm" value="{{ total_penalty }}" readonly>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="pre_processing_fee" class="form-label">Pre-Processing Fee</label>
+                    <input type="number" id="pre_processing_fee" name="pre_processing_fee" class="form-control shadow-sm" value="{{ pre_processing_fee|floatformat:2 }}" readonly>
+                </div>
+                <div class="col-md-4">
+
+                    <label for="loan_closure_total" class="form-label fw-bold">Total Loan Closure Amount</label>
+                    <input type="number" id="loan_closure_total" name="loan_closure_total" class="form-control fw-bold shadow-sm" value="{{ loan_closure|floatformat:2 }}" readonly>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to make this payment?');">
+                Make Payment
+            </button>
+    </div>
+</div>
+
+
+               
             </form>
         </div>
             </div>

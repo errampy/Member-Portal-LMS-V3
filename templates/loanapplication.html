@@ -8,8 +8,7 @@
     <a href="{% url 'applyloan' %}" class="btn btn-primary text-decoration-none text-white me-2">
         Apply Loan
     </a>
-   
-</div>
+  </div>
 
   {% if loans %}
   <div class="table-responsive">
@@ -17,24 +16,20 @@
       <thead>
         <tr class="table-primary">
           <th>S.No</th>
-          {% comment %} <th>Code</th> {% endcomment %}
-          {% comment %} <th>Checked On</th> {% endcomment %}
-          <th>Loan </th>
+          <th>Loan</th>
           <th>Application Number</th>
           <th>Loan Purpose</th>
-          <th> Status</th>
-          <th>Interest </th>
+          <th>Status</th>
+          <th>Interest</th>
           <th>Tenure</th>
           <th>Disbursement Type</th>
-          <th colspan=2>Action </th>
+          <th colspan="3">Action</th>
         </tr>
       </thead>
       <tbody>
         {% for loan in loans %}
         <tr>
           <td>{{ forloop.counter }}</td>
-          {% comment %} <td>{{ loan.code|default:"-" }}</td> {% endcomment %}
-          {% comment %} <td>{{ loan.checked_on|default:"-" }}</td> {% endcomment %}
           <td>{{ loan.loan_amount|default:"-"|floatformat:2 }}</td>
           <td>{{ loan.application_id|default:"-" }}</td>
           <td>{{ loan.loan_purpose|default:"-" }}</td>
@@ -42,16 +37,20 @@
           <td>{{ loan.interest_rate|default:"-" }}</td>
           <td>{{ loan.tenure|default:"-" }}</td>
           <td>{{ loan.disbursement_type|default:"-" }}</td>
-          <td> <a href="{% url 'loan-restructure'  loan.member_id loan.code loan.loantype %}" class="btn btn-secondary text-decoration-none text-white me-2">
-             Restructure 
-        </a>
-        <a href="{% url 'loan-refinance' loan.member_id loan.code loan.loantype%}" class="btn btn-success text-decoration-none text-white">
-           Refinance 
-        </a>
-        <a href="{% url 'loan-closure' loan.member_id loan.code loan.loantype%}" class="btn btn-success text-decoration-none text-white">
-          Loan Closure 
-       </a>
-      </td>
+          <td>
+            <a href="{% url 'loan-restructure' loan.member_id loan.code loan.loantype %}"
+               class="btn btn-secondary text-decoration-none text-white me-2 {% if loan.application_status == 'Restructured' %}disabled{% endif %}">
+              Restructure
+            </a>
+            <a href="{% url 'loan-refinance' loan.member_id loan.code loan.loantype %}"
+               class="btn btn-success text-decoration-none text-white me-2 {% if loan.application_status == 'Refinanced' %}disabled{% endif %}">
+              Refinance
+            </a>
+            <a href="{% url 'loan-closure' loan.member_id loan.code loan.loantype %}" 
+               class="btn btn-warning text-decoration-none text-white">
+              Loan Closure
+            </a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

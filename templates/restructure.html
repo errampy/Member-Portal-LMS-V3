@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block body_block %}
-<div class="container mt-5">
-    <div class="card px-4 py-4 shadow-lg">
+<div class="container mt-5" style="max-width: 90%;">
+    <div class="card px-5 py-5 shadow-lg">
         <h3 class="text-center mb-4">Restructure Loan Details</h3>
 
         <!-- Loan Details Section -->
         <div class="row">
             <div class="col-md-6">
-                <table class="table table-bordered ">
+                <table class="table table-bordered">
                     <tbody>
                         <tr>
                             <th class="text-end w-50">Interest Rate</th>
@@ -27,20 +27,9 @@
                             <th class="text-end">Repayment Schedule</th>
                             <td>{{ repayment_schedule }}</td>
                         </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="col-md-6">
-                <table class="table table-bordered ">
-                    <tbody>
                         <tr>
-                            <th class="text-end w-50">Disbursement Type</th>
+                            <th class="text-end">Disbursement Type</th>
                             <td>{{ disbursement_type }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-end">Loan Type</th>
-                            <td>{{ loantype }}</td>
                         </tr>
                         <tr>
                             <th class="text-end">Application ID</th>
@@ -70,19 +59,8 @@
                             <td>{{ min_terms }}</td>
                         </tr>
                         <tr>
-                            <th class="text-end">Paid Installment </th>
+                            <th class="text-end">Paid Installment</th>
                             <td>{{ pending_installment }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="col-md-6">
-                <table class="table table-bordered">
-                    <tbody>
-                        <tr>
-                            <th class="text-end w-50">Minimum Loan Amount</th>
-                            <td>{{ min_loan_amt }}</td>
                         </tr>
                         <tr>
                             <th class="text-end">Amount Paid</th>
@@ -93,10 +71,9 @@
                             <td>{{ total_due|floatformat:2 }}</td>
                         </tr>
                         <tr>
-                            <th class="text-end">Pending Installment </th>
+                            <th class="text-end">Pending Installment</th>
                             <td>{{ paid_installment }}</td>
                         </tr>
-                     
                     </tbody>
                 </table>
             </div>
@@ -104,7 +81,7 @@
 
         <!-- Restructure Form -->
         <h3 class="text-center mb-4">Restructure Form</h3>
-        <form id="RestructureForm" method="POST" enctype="multipart/form-data">
+        <form id="RestructureForm" method="POST" enctype="multipart/form-data" class="px-4">
             {% csrf_token %}
 
             <div class="row mb-3">
@@ -120,11 +97,13 @@
                     <input type="date" id="repayment_id" name="repayment_id" class="form-control" required>
                 </div>
             </div>
+
             {% if error_message %}
             <div class="alert alert-danger">
                 {{ error_message }}
             </div>
             {% endif %}
+
             <div class="text-center">
                 <button type="submit" class="btn btn-success btn-lg px-5">Submit</button>
             </div>

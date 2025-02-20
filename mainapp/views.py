@@ -315,7 +315,7 @@ def applyloan(request):
 
             # Simulating the API request for loan types
             loan_dict = {
-                "ms_id": "MS5028967",
+                "ms_id": "MS18029962", #create loanapplication member
                 'ms_payload': cleaned_data         
             }
             print('loan_dict', loan_dict)
@@ -333,7 +333,7 @@ def applyloan(request):
     else:
         form = LoanDisbursementForm()
         dict1 = {
-            "ms_id": "MS5026390",
+            "ms_id": "MS18021784", #view lo
             "ms_payload": {}
         }
         json_data = json.dumps(dict1)
@@ -351,7 +351,7 @@ def applyloan(request):
                 ]
 
         dict2 = {
-            "ms_id": "MS7018031",
+            "ms_id": "MS18029635",
             "ms_payload": {}
         }
         json_data = json.dumps(dict2)
@@ -403,7 +403,7 @@ def basic1(request):
             files, cleaned_data = image_filescreate(cleaned_data)
 
             dict2 = {
-                "ms_id": "MS5022689",
+                "ms_id": "MS18023016", #create portal member
                 "ms_payload": cleaned_data if files else cleaned_data
                 }
 
@@ -417,10 +417,10 @@ def basic1(request):
         else:
             print(form.errors)  # Print errors if form is not valid
     else:
-        form = UserRegistrationForm()  # Create an empty form if GET request
+        form = UserRegistrationForm()  
         category_dict = {
-                "ms_id": "MS5024477",
-                "ms_payload": {'branch_id':'2'}
+                "ms_id": "MS18022936", #view category portal
+                "ms_payload": {'branch_id':'1'}
             }
         json_data = json.dumps(category_dict)
         category = call_post_method_without_token(url, json_data)
@@ -438,8 +438,8 @@ def basic1(request):
         print('category_data',category_datas)
 
         category_type_dict = {
-                "ms_id": "MS5025936",
-                "ms_payload": {'branch_id':'2'}
+                "ms_id": "MS18025889", #view categorytype portal
+                "ms_payload": {'branch_id':'1'}
             }
         json_data = json.dumps(category_type_dict)
         category_type = call_post_method_without_token(url, json_data)
@@ -457,8 +457,8 @@ def basic1(request):
                 print('category_type_data',category_type_datas)
 
         category_dict = {
-                "ms_id": "MS5027597",
-                "ms_payload": {'branch_id':'2'}
+                "ms_id": "MS18028412", #view membercategories portal
+                "ms_payload": {'branch_id':'1'}
             }
         json_data = json.dumps(category_dict)
         member_category = call_post_method_without_token(url, json_data)
@@ -477,8 +477,8 @@ def basic1(request):
 
         officer_datas=[]
         officer_dict = {
-                "ms_id": "MS5028323",
-                "ms_payload": {'branch_id':'2'}
+                "ms_id": "MS18021304",#view employeeform portal
+                "ms_payload": {'branch_id':'1'}
             }
         json_data = json.dumps(officer_dict)
         officer_dict = call_post_method_without_token(url, json_data)
@@ -495,8 +495,8 @@ def basic1(request):
                 print('officer_data',officer_datas)
         department_datas=[]
         department_dict = {
-                "ms_id": "MS5028243",
-                "ms_payload": {'branch_id':'2'}
+                "ms_id": "MS18029481", #view department portal
+                "ms_payload": {'branch_id':'1'}
             }
         json_data = json.dumps(department_dict)
         department_dict = call_post_method_without_token(url, json_data)
@@ -515,8 +515,8 @@ def basic1(request):
 
         title_datas = []  # Initialize an empty list before the if condition
         title_dict = {
-                "ms_id": "MS5025774",
-                "ms_payload": {'branch_id':'2'}
+                "ms_id": "MS18026709", #view titles portal
+                "ms_payload": {'branch_id':'1'}
             }
         json_data = json.dumps(title_dict)
         title_data = call_post_method_without_token(url, json_data)
@@ -629,7 +629,7 @@ def loancalculator(request):
 
             print('cleaned_data', cleaned_data)
             dict1 = {
-                    "ms_id": "MS5024169",
+                    "ms_id": "MS18026095", #calculate repayment schedule
                     "ms_payload":  cleaned_data,
                     
                 }
@@ -660,7 +660,7 @@ def loancalculator(request):
     else:
         form = Loancalculator()
         dict1 = {
-            "ms_id": "MS5026390",
+            "ms_id": "MS18021784",
             "ms_payload": {}
         }
         json_data = json.dumps(dict1)
@@ -1085,7 +1085,7 @@ def get_tenure_details(request, loantype_id):
     print('code', loantype_id)
     
     dict1 = {
-        "ms_id": "MS5025311",
+        "ms_id": "MS18029635", #get tenure details
         "ms_payload": {
             "loantype_id": loantype_id,
         }
@@ -1306,17 +1306,23 @@ def loan_refinance(request, member, loanapp, loan):
     form = RefinanceForm()
     if loan_status == 'Restructured':
         dict1 = {
-            "ms_id": "MS5026036",
+            "ms_id": "MS18024416", #getting repayment restructure schedules
             "ms_payload": {
                 "loanapp_id": loanapp,
-                "branch_id": 2,
+                "branch_id": 1,
             }
         }
         json_data = json.dumps(dict1)
         response1 = call_post_method_without_token(url, json_data)
-        restructured_details = json.loads(response1.content)
+        schedules = json.loads(response1.content)
+        print('schedules',schedules)
+        paid_amount=sum(item['paid_amount'] for item in schedules)
+        total_due = sum(item['instalment_amount'] for item in schedules) - sum(item['paid_amount'] for item in schedules)
+        eligibile = max_loan_amt - total_due
+        print('total_due',total_due)
+        print('eligibile',eligibile)
         dict1 = {
-            "ms_id": "MS5026036",
+            "ms_id": "MS18022741", #getting next restructure schedules member
             "ms_payload": {
                 "loanapp_id": loanapp,
                 "branch_id": 2,
@@ -1343,48 +1349,47 @@ def loan_refinance(request, member, loanapp, loan):
         eligibile = max_loan_amt - total_due
         print('total_due',total_due)
         print('eligibile',eligibile)
-        if request.method == 'POST':
-            form = RefinanceForm(request.POST)
-            if form.is_valid():
-                cleaned_data = form.cleaned_data
-                loan_amount = cleaned_data['loan_amount']
-                new_amount = loan_amount - total_due
-                tenure = cleaned_data['tenure']
-                repayment_id = cleaned_data['repayment_id'].strftime('%Y-%m-%d')
+    if request.method == 'POST':
+        form = RefinanceForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            loan_amount = cleaned_data['loan_amount']
+            new_amount = loan_amount - total_due
+            tenure = cleaned_data['tenure']
+            repayment_id = cleaned_data['repayment_id'].strftime('%Y-%m-%d')
 
-                resp = validate_refinance_form(
-                    max_loan_amt, min_loan_amt, loan_amount, tenure, repayment_id,
-                    max_terms, min_terms, total_due, loan_status, is_refinance
-                )
-
-                if resp[0]:
-                    dict1 = {
-                        "ms_id": "MS18026790", #loan refinance member
-                        "ms_payload": {
-                            'new_tenure': tenure,
-                            'new_amount': new_amount,
-                            'loan_id': loan,
-                            'loanapp_id': loanapp,
-                            'approval_status': "Refinanced",
-                            'repayment_start_date': repayment_id,
-                            "branch_id": 2,
-                        }
+            resp = validate_refinance_form(
+              eligibile=eligibile,    loan_amount=loan_amount, tenure=tenure, repayment_id=repayment_id,
+                max_tenure=max_terms, min_tenure=min_terms, total_due=total_due,loan_status= loan_status, is_refinance=is_refinance
+            )
+            if resp[0]:
+                dict1 = {
+                    "ms_id": "MS18026790", #loan refinance member
+                    "ms_payload": {
+                        'new_tenure': tenure,
+                        'new_amount': new_amount,
+                        'loan_id': loan,
+                        'loanapp_id': loanapp,
+                        'approval_status': "Refinanced",
+                        'repayment_start_date': repayment_id,
+                        "branch_id": 1,
                     }
-                    json_data = json.dumps(dict1)
-                    call_post_method_without_token(url, json_data)
-                    return redirect('loanapplication')
+                }
+                json_data = json.dumps(dict1)
+                call_post_method_without_token(url, json_data)
+                return redirect('loanapplication')
 
-                else:
-                    context = {
-                        'form': form, 'member': member, 'tenure_type': tenure_type, 'tenure': tenure,
-                        'disbursement_type': disbursement_type, 'repayment_schedule': repayment_schedule,
-                        'application_id': application_id, 'min_terms': min_terms, 'max_terms': max_terms,
-                        'max_loan_amt': max_loan_amt, 'min_loan_amt': min_loan_amt,
-                        'loan_calculation_method': loan_calculation_method, 'interest_rate': interest_rate,
-                        'loantype': loantype, 'error_message': resp[1],
-                        'total_due': total_due, 'eligibile': eligibile, 'loan_amount': loan_amount,'paid_amount':paid_amount
-                    }
-                    return render(request, 'refinance.html', context)  # FIXED: Always return here
+            else:
+                context = {
+                    'form': form, 'member': member, 'tenure_type': tenure_type, 'tenure': tenure,
+                    'disbursement_type': disbursement_type, 'repayment_schedule': repayment_schedule,
+                    'application_id': application_id, 'min_terms': min_terms, 'max_terms': max_terms,
+                    'max_loan_amt': max_loan_amt, 'min_loan_amt': min_loan_amt,
+                    'loan_calculation_method': loan_calculation_method, 'interest_rate': interest_rate,
+                    'loantype': loantype, 'error_message': resp[1],
+                    'total_due': total_due, 'eligibile': eligibile, 'loan_amount': loan_amount,'paid_amount':paid_amount
+                }
+                return render(request, 'refinance.html', context) 
 
     context = {
         'form': form, 'member': member, 'tenure_type': tenure_type, 'tenure': tenure,
@@ -1393,10 +1398,10 @@ def loan_refinance(request, member, loanapp, loan):
         'max_loan_amt': max_loan_amt, 'min_loan_amt': min_loan_amt,
         'loan_calculation_method': loan_calculation_method, 'interest_rate': interest_rate,
         'loantype': loantype, 'loan_amount': loan_amount,'paid_amount':paid_amount,
-        'total_due': total_due, 'eligibile': eligibile, 'loan_amount': loan_amount
+        'total_due': total_due, 'eligibile': eligibile, 'loan_amount': loan_amount,
 
     }
-    return render(request, 'refinance.html', context)  # Ensuring function always returns
+    return render(request, 'refinance.html', context)  
 
 
 def loan_restructure(request,member,loanapp,loan):
@@ -1521,7 +1526,7 @@ def loan_restructure(request,member,loanapp,loan):
                     'form': form, 'member': member, 'tenure_type': tenure_type, 'tenure': tenure,
                     'disbursement_type': disbursement_type, 'repayment_schedule': repayment_schedule,
                     'application_id': application_id, 'min_terms': min_terms, 'max_terms': max_terms,
-                    'max_loan_amt': max_loan_amt, 'min_loan_amt': min_loan_amt,'paid_amount':total_installment_amount,
+                    'max_loan_amt': max_loan_amt, 'min_loan_amt': min_loan_amt,'paid_amount':total_paid_amount,
                     'loan_calculation_method': loan_calculation_method, 'interest_rate': interest_rate,
                     'loantype': loantype, 'error_message': resp[1],'paid_installment':paid_installment,
                     'pending_installment':pending_installment,
@@ -1535,7 +1540,7 @@ def loan_restructure(request,member,loanapp,loan):
         'application_id': application_id, 'min_terms': min_terms, 'max_terms': max_terms,
         'max_loan_amt': max_loan_amt, 'min_loan_amt': min_loan_amt,
         'loan_calculation_method': loan_calculation_method, 'interest_rate': interest_rate,
-        'loantype': loantype, 'loan_amount': loan_amount,'paid_amount':total_installment_amount,
+        'loantype': loantype, 'loan_amount': loan_amount,'paid_amount':total_paid_amount,
         'paid_installment':paid_installment,
                     'pending_installment':pending_installment,
         'total_due': total_due,  'loan_amount': loan_amount
@@ -1628,10 +1633,15 @@ def loan_closure(request,member,loanapp,loan):
         total_due=sum(item['instalment_amount'] for item in schedules) -sum(item['paid_amount'] for item in schedules)
         total_interest=sum(item['interest_amount'] for item in schedules) 
         total_penalty=sum(item['payable_penalty_amt'] for item in schedules) 
-        print('total_due',total_due)
-        print('total_interest',total_interest)
-        print('total_penalty',total_penalty)
-        loan_close=total_due+total_interest+total_penalty
+        print('total_due:', total_due)
+        print('total_interest:', total_interest)
+        print('total_penalty:', total_penalty)
+
+        loan_close = total_due + total_interest + total_penalty
+        pre_processing_fee = total_due * 0.02
+        loan_close += pre_processing_fee
+        print('Pre-Processing Fee:', pre_processing_fee)
+        print('Total Loan Closure Amount:', loan_close)
         member = request.session.get('loanapp')
         if not member or 'application_id' not in member:
             return render(request, 'repayment.html', {'error_message': 'Loan application not submitted'})
@@ -1669,7 +1679,12 @@ def loan_closure(request,member,loanapp,loan):
         print('total_due',total_due)
         print('total_interest',total_interest)
         print('total_penalty',total_penalty)
-        loan_close=total_due+total_interest+total_penalty
+        # loan_close=total_due+total_interest+total_penalty
+        loan_close = total_due + total_interest + total_penalty
+        pre_processing_fee = total_due * 0.02
+        loan_close += pre_processing_fee
+        print('Pre-Processing Fee:', pre_processing_fee)
+        print('Total Loan Closure Amount:', loan_close)
         print('loan_close',loan_close)
         member = request.session.get('loanapp')
         if not member or 'application_id' not in member:
@@ -1722,9 +1737,10 @@ def loan_closure(request,member,loanapp,loan):
         'max_loan_amt': max_loan_amt, 'min_loan_amt': min_loan_amt,
         'loan_calculation_method': loan_calculation_method, 'interest_rate': interest_rate,
         'loantype': loantype, 'loan_amount': loan_amount,'paid_amount':total_installment_amount,
-        'paid_installment':paid_installment,
-                    'pending_installment':pending_installment,
-        'total_due': total_due,  'loan_amount': loan_amount,'schedules': schedules,'loan_close':loan_close
+        'paid_installment':paid_installment,'pre_processing_fee':pre_processing_fee,'total_interest':total_interest,
+                    'pending_installment':pending_installment,'total_penalty':total_penalty,
+
+        'total_due': total_due,  'loan_amount': loan_amount,'schedules': schedules,'loan_closure':loan_close
 
     }
     return render(request, 'loan_closure.html', context)
